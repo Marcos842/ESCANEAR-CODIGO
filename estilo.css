@@ -1,0 +1,105 @@
+/* Estilo general */
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    text-align: center;
+    padding: 20px;
+    margin: 0;
+    background: #f0f0f0;
+}
+
+/* Contenedor principal */
+h1 {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+/* Lector de cámara */
+#reader {
+    width: 100%;
+    max-width: 500px;
+    margin: 20px auto;
+}
+
+/* Voltear video para que te veas como espejo */
+#reader video {
+    transform: scaleX(-1);
+}
+
+/* Tarjetas / cajas blancas */
+#result,
+#generator,
+#excelSection {
+    background: #ffffff;
+    padding: 20px;
+    margin: 20px auto;
+    border-radius: 10px;
+    max-width: 700px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+/* Texto del código escaneado */
+#code {
+    font-size: 28px;
+    font-weight: bold;
+    word-wrap: break-word;
+}
+
+/* Botones generales */
+button {
+    background: #4CAF50;
+    color: #ffffff;
+    padding: 12px 25px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    margin: 8px;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.1s ease;
+}
+
+button:hover {
+    background: #45a049;
+    transform: translateY(-1px);
+}
+
+/* Botón de peligro (detener) */
+button.danger {
+    background: #f44336;
+}
+
+button.danger:hover {
+    background: #da190b;
+}
+
+/* Inputs */
+input {
+    padding: 10px;
+    font-size: 16px;
+    border: 2px solid #dddddd;
+    border-radius: 5px;
+    width: 260px;
+    max-width: 90%;
+    margin: 10px;
+}
+
+/* Canvases para código de barras y QR */
+#barcodeCanvas,
+#qrCanvas {
+    border: 2px solid #4CAF50;
+    margin: 10px;
+    background: #ffffff;
+}
+
+/* Vista previa tipo Excel */
+#excelPreview {
+    text-align: left;
+    max-width: 680px;
+    margin: 10px auto 0 auto;
+    background: #fafafa;
+    border: 1px solid #e0e0e0;
+    border-radius: 5px;
+    padding: 10px;
+    font-family: "Courier New", monospace;
+    font-size: 14px;
+    white-space: pre-wrap;
+}

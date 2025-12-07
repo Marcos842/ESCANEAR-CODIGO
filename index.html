@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Escáner + Generador Códigos</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Estilos -->
+    <link rel="stylesheet" href="estilo.css">
+
+    <!-- Librerías externas -->
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+</head>
+<body>
+    <h1>🖥️ Escáner LEDdecodigodebarras</h1>
+
+    <!-- ESCÁNER -->
+    <div id="reader"></div>
+    <button id="btnStart">📱 Iniciar Escáner</button>
+    <button id="btnStop" class="danger">⏹️ Detener</button>
+
+    <!-- RESULTADO ESCÁNER -->
+    <div id="result" style="display:none;">
+        <h2>✅ Código Escaneado:</h2>
+        <p id="code"></p>
+
+        <button id="btnCopyCode">📋 Copiar</button>
+        <button id="btnSendAPI">📤 Enviar a API</button>
+
+        <div id="shareButtons">
+            <h3>🔗 Compartir código</h3>
+            <button id="btnShareNative">📤 Compartir (móvil)</button>
+            <button id="btnShareWhatsApp">🟢 WhatsApp</button>
+            <button id="btnShareTelegram">🔵 Telegram</button>
+            <button id="btnDownloadTxt">⬇️ Descargar .txt</button>
+            <button id="btnShareImage">🖼️ Compartir imagen</button>
+        </div>
+    </div>
+
+    <!-- GENERADOR -->
+    <div id="generator">
+        <h2>➕ Crear Código de Barras</h2>
+        <input type="text" id="codigoInput" placeholder="Escribe código (ej: 1234567890123)" maxlength="40">
+        <br>
+        <button id="btnGenBarcode">📊 Generar Código Barras</button>
+        <button id="btnGenQR">📱 Generar QR</button>
+
+        <canvas id="barcodeCanvas" width="300" height="100" style="display:none;"></canvas>
+        <canvas id="qrCanvas" width="200" height="200" style="display:none;"></canvas>
+        <br>
+        <button id="btnAddExcel" style="display:none;">📊 Agregar a Excel</button>
+        <button id="btnDownloadPng">⬇️ Descargar PNG</button>
+        <button id="btnDownloadJpg">⬇️ Descargar JPG</button>
+    </div>
+
+    <!-- EXCEL -->
+    <div id="excelSection" style="display:none;">
+        <h2>📋 Lista para Excel / Google Sheets</h2>
+        <button id="btnDownloadExcel">💾 Descargar Excel</button>
+        <button id="btnCopyExcel">📋 Copiar TSV</button>
+        <div id="excelPreview"></div>
+    </div>
+
+    <!-- Lógica JS -->
+    <script src="script.js"></script>
+</body>
+</html>
