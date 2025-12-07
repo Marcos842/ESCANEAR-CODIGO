@@ -56,8 +56,14 @@ async function startScan() {
 
 function stopScan() {
   if (scanner) {
-    scanner.stop().then(() => scanner.clear());
-    scanner = null;
+    scanner.stop()
+      .then(() => {
+        scanner.clear();
+        scanner = null;
+      })
+      .catch(() => {
+        scanner = null;
+      });
   }
 }
 
@@ -99,6 +105,7 @@ function generateBarcode() {
 
   ensureJsBarcode(() => {
     const canvas = document.getElementById('barcodeCanvas');
+    if (!canvas) return alert('No se encontró el canvas de barras');
     canvas.style.display = 'inline-block';
     JsBarcode(canvas, code, {
       format: "CODE128",
@@ -116,6 +123,8 @@ function generateQR() {
   if (!code) return alert('Escribe un código primero');
 
   const canvas = document.getElementById('qrCanvas');
+  if (!canvas) return alert('No se encontró el canvas de QR');
+
   const ctx = canvas.getContext('2d');
   canvas.style.display = 'inline-block';
 
