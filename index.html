@@ -5,19 +5,8 @@
   <title>Escáner LEDdecodigodebarras</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- Estilos muy simples, puedes usar tu propio CSS -->
-  <style>
-    body { font-family: Arial, sans-serif; background:#f5f5f5; margin:0; }
-    h1 { text-align:center; margin:20px 0; }
-    .container { max-width:900px; margin:0 auto 40px; background:#fff; padding:20px; box-shadow:0 0 10px rgba(0,0,0,.1); }
-    .center { text-align:center; }
-    button { margin:5px; padding:10px 18px; border:none; border-radius:4px; cursor:pointer; }
-    .btn-green { background:#28a745; color:#fff; }
-    .btn-red { background:#dc3545; color:#fff; }
-    .btn-blue { background:#007bff; color:#fff; }
-    input[type="text"] { width:80%; max-width:320px; padding:8px; }
-    canvas { border:1px solid #ccc; margin:10px; }
-  </style>
+  <!-- CSS externo -->
+  <link rel="stylesheet" href="estilos.css">
 
   <!-- Librerías externas -->
   <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
@@ -37,11 +26,11 @@
       <button id="btnStop" class="btn-red">⏹️ Detener</button>
     </div>
 
-    <div id="reader" style="width:320px; max-width:100%; margin:20px auto;"></div>
+    <div id="reader" class="reader-box"></div>
 
-    <div id="result" class="center" style="display:none; margin-top:20px;">
+    <div id="result" class="center result-box">
       <h2>✅ Código Escaneado:</h2>
-      <p id="code" style="font-size:24px; font-weight:bold;"></p>
+      <p id="code" class="code-text"></p>
 
       <button id="btnCopyCode" class="btn-blue">📋 Copiar</button>
       <button id="btnSendForm" class="btn-green">📥 Guardar en Form</button>
@@ -58,9 +47,9 @@
       <button id="btnGenQR" class="btn-blue">📱 Generar QR</button>
     </div>
 
-    <div class="center">
-      <canvas id="barcodeCanvas" width="300" height="100" style="display:none;"></canvas>
-      <canvas id="qrCanvas" width="200" height="200" style="display:none;"></canvas>
+    <div class="center canvas-box">
+      <canvas id="barcodeCanvas" width="300" height="100"></canvas>
+      <canvas id="qrCanvas" width="200" height="200"></canvas>
     </div>
 
     <div class="center">
