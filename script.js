@@ -1,8 +1,8 @@
 // ================== CONFIG GOOGLE FORM ==================
 const GOOGLE_FORM_ACTION =
-  "https://docs.google.com/forms/u/0/d/e/1FAIpQLSe_0E3-hsF4nbq0nArjQvUVe2ckG2xfz3pvU-v5z9edLAVbtA/formResponse";
-// CAMBIA esto por tu entry real desde la pestaña Payload/Form Data
-const GOOGLE_ENTRY_CODE = "entry.XXXXXXXXXX";  // <-- reemplaza XXXXXXXXXX
+  "https://docs.google.com/forms/d/e/1FAIpQLSe_0E3-hsF4nbq0nArjQvuVe2ckG2xfz3pvU-v5z9edLAVbtA/formResponse";
+
+const GOOGLE_ENTRY_CODE = "entry.1389898450";
 
 // ================== VARIABLES GLOBALES ==================
 let scanner = null;
@@ -20,7 +20,7 @@ const beepAudio = document.getElementById('beepAudio');
 const btnStart = document.getElementById('btnStart');
 const btnStop = document.getElementById('btnStop');
 const btnCopyCode = document.getElementById('btnCopyCode');
-const btnSendAPI = document.getElementById('btnSendAPI');
+const btnSendForm = document.getElementById('btnSendForm');
 const btnShareNative = document.getElementById('btnShareNative');
 const btnShareWhatsApp = document.getElementById('btnShareWhatsApp');
 const btnShareTelegram = document.getElementById('btnShareTelegram');
@@ -56,9 +56,7 @@ async function startScan() {
                 playBeep();
                 codeDiv.textContent = decodedText;
                 resultDiv.style.display = 'block';
-
-                sendToGoogleForm(decodedText);   // guarda en Form
-                addToExcelData(decodedText, 'Escaneado');
+                addToExcelData(decodedText, 'Escaneado'); // registro local
                 stopScan();
             },
             () => {}
@@ -201,28 +199,9 @@ function copyCode() {
         .then(() => alert('Código copiado.'));
 }
 
-async function sendToAPI() {
-    const code = codeDiv.textContent.trim();
-    if (!code) return alert('No hay código escaneado.');
-    const url = 'TU_API_URL_AQUI';
-
-    try {
-        const resp = await fetch(url, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ codigo: code })
-        });
-        if (!resp.ok) throw new Error('Respuesta no OK');
-        alert('✅ Enviado correctamente.');
-    } catch (err) {
-        alert('Error enviando a la API: ' + err.message);
-    }
-}
-
 // ================== ENVIAR A GOOGLE FORM ==================
 function sendToGoogleForm(codigo) {
-    if (!GOOGLE_ENTRY_CODE.includes("entry.")) return; // por si aún no configuras
-
+    if (!codigo) return;
     const formData = new FormData();
     formData.append(GOOGLE_ENTRY_CODE, codigo);
 
@@ -321,7 +300,14 @@ async function shareBarcodeImage() {
 btnStart.addEventListener('click', startScan);
 btnStop.addEventListener('click', stopScan);
 btnCopyCode.addEventListener('click', copyCode);
-btnSendAPI.addEventListener('click', sendToAPI);
+
+btnSendForm.addEventListener('click', () => {
+    const code = codeDiv.textContent.trim();
+    if (!code) return alert('No hay código escaneado');
+    sendToGoogleForm(code);
+    alert('Código enviado al formulario');
+});
+
 btnShareNative.addEventListener('click', shareNative);
 btnShareWhatsApp.addEventListener('click', shareWhatsApp);
 btnShareTelegram.addEventListener('click', shareTelegram);
