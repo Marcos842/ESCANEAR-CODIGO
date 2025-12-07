@@ -41,12 +41,17 @@
   <div class="container">
     <div class="center">
       <h2>➕ Crear Código de Barras</h2>
-      <input type="text" id="codigoInput" placeholder="Escribe código (ej: 1234567890123)" maxlength="40">
+      <input
+        type="text"
+        id="codigoInput"
+        placeholder="Escribe código (ej: 1234567890123)"
+        maxlength="40">
       <br>
       <button id="btnGenBarcode" class="btn-green">📊 Generar Código Barras</button>
       <button id="btnGenQR" class="btn-blue">📱 Generar QR</button>
     </div>
 
+    <!-- Canvases CORRECTOS, sin texto roto -->
     <div class="center canvas-box">
       <vas id="barcodeCanvas" width="300" heightt="100"></canvas>
       nvas id="qrCanvas" width="200" heightt="200"></canvas>
