@@ -1,3 +1,10 @@
+// ================== CONFIG GOOGLE FORM ==================
+const GOOGLE_FORM_ACTION =
+  "https://docs.google.com/forms/u/0/d/e/1FAIpQLSe_0E3-hsF4nbq0nArjQvUVe2ckG2xfz3pvU-v5z9edLAVbtA/formResponse";
+// CAMBIA esto por tu entry real desde la pestaña Payload/Form Data
+const GOOGLE_ENTRY_CODE = "entry.XXXXXXXXXX";  // <-- reemplaza XXXXXXXXXX
+
+// ================== VARIABLES GLOBALES ==================
 let scanner = null;
 let excelData = [];
 let jsBarcodeLoaded = false;
@@ -6,6 +13,8 @@ const resultDiv = document.getElementById('result');
 const codeDiv = document.getElementById('code');
 const excelBtn = document.getElementById('btnAddExcel');
 const excelSection = document.getElementById('excelSection');
+
+const beepAudio = document.getElementById('beepAudio');
 
 // Botones
 const btnStart = document.getElementById('btnStart');
@@ -24,7 +33,14 @@ const btnDownloadJpg = document.getElementById('btnDownloadJpg');
 const btnDownloadExcel = document.getElementById('btnDownloadExcel');
 const btnCopyExcel = document.getElementById('btnCopyExcel');
 
-// ========= ESCÁNER =========
+// ================== SONIDO PIP ==================
+function playBeep() {
+    if (!beepAudio) return;
+    beepAudio.currentTime = 0;
+    beepAudio.play().catch(() => {});
+}
+
+// ================== ESCÁNER ==================
 async function startScan() {
     scanner = new Html5Qrcode("reader");
     const config = {
@@ -37,10 +53,13 @@ async function startScan() {
             { facingMode: "environment" },
             config,
             (decodedText) => {
+                playBeep();
                 codeDiv.textContent = decodedText;
                 resultDiv.style.display = 'block';
-                stopScan();
+
+                sendToGoogleForm(decodedText);   // guarda en Form
                 addToExcelData(decodedText, 'Escaneado');
+                stopScan();
             },
             () => {}
         );
@@ -56,7 +75,7 @@ function stopScan() {
     }
 }
 
-// ========= GENERADOR =========
+// ================== GENERADOR CÓDIGO DE BARRAS ==================
 function ensureJsBarcode(callback) {
     if (jsBarcodeLoaded) return callback();
     const script = document.createElement('script');
@@ -83,7 +102,7 @@ function generateBarcode() {
     });
 }
 
-// QR con qrcode-generator (qrcode global)
+// ================== GENERADOR QR (qrcode-generator) ==================
 function generateQR() {
     const code = document.getElementById('codigoInput').value.trim();
     if (!code) return alert('Escribe un código primero');
@@ -92,10 +111,8 @@ function generateQR() {
     const ctx = canvas.getContext('2d');
     canvas.style.display = 'block';
 
-    // Limpia el canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Crea QR en memoria
     const qr = qrcode(0, 'H');
     qr.addData(code);
     qr.make();
@@ -104,11 +121,9 @@ function generateQR() {
     const cellSize = Math.floor(canvas.width / modules);
     const margin = Math.floor((canvas.width - cellSize * modules) / 2);
 
-    // Fondo blanco
     ctx.fillStyle = '#FFFFFF';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Módulos negros
     ctx.fillStyle = '#000000';
     for (let r = 0; r < modules; r++) {
         for (let c = 0; c < modules; c++) {
@@ -132,7 +147,7 @@ function addToExcelFromInput() {
     addToExcelData(code, 'Generado');
 }
 
-// ========= EXCEL =========
+// ================== EXCEL LOCAL ==================
 function addToExcelData(code, tipo) {
     excelData.push({
         codigo: code,
@@ -178,7 +193,7 @@ function copyExcel() {
         .then(() => alert('Copiado. Pega en Excel o Google Sheets.'));
 }
 
-// ========= UTILIDADES CÓDIGO =========
+// ================== UTILIDADES CÓDIGO ==================
 function copyCode() {
     const text = codeDiv.textContent.trim();
     if (!text) return;
@@ -204,7 +219,21 @@ async function sendToAPI() {
     }
 }
 
-// ========= COMPARTIR TEXTO =========
+// ================== ENVIAR A GOOGLE FORM ==================
+function sendToGoogleForm(codigo) {
+    if (!GOOGLE_ENTRY_CODE.includes("entry.")) return; // por si aún no configuras
+
+    const formData = new FormData();
+    formData.append(GOOGLE_ENTRY_CODE, codigo);
+
+    fetch(GOOGLE_FORM_ACTION, {
+        method: 'POST',
+        mode: 'no-cors',
+        body: formData
+    }).catch(() => {});
+}
+
+// ================== COMPARTIR TEXTO ==================
 function getShareText() {
     const code = codeDiv.textContent.trim();
     return code ? `Código: ${code}` : '';
@@ -250,7 +279,7 @@ function downloadTxt() {
     URL.revokeObjectURL(url);
 }
 
-// ========= IMAGEN CÓDIGO (Barras o QR) =========
+// ================== IMAGEN (BARRAS o QR) ==================
 function downloadCanvasImage(tipo = 'barras', format = 'png') {
     const canvas = tipo === 'qr'
         ? document.getElementById('qrCanvas')
@@ -288,7 +317,7 @@ async function shareBarcodeImage() {
     }
 }
 
-// ========= EVENT LISTENERS =========
+// ================== EVENT LISTENERS ==================
 btnStart.addEventListener('click', startScan);
 btnStop.addEventListener('click', stopScan);
 btnCopyCode.addEventListener('click', copyCode);
