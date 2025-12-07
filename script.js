@@ -35,7 +35,7 @@ async function startScan() {
   const config = {
     fps: 10,
     qrbox: { width: 250, height: 180 },
-    disableFlip: true   // quita el modo espejo
+    disableFlip: true
   };
 
   try {
@@ -108,12 +108,11 @@ function generateBarcode() {
     const canvas = document.getElementById('barcodeCanvas');
     if (!canvas) return alert('No se encontró el canvas de barras');
 
+    // JsBarcode SOLO acepta canvas, img, svg o un selector;
+    // aquí le pasamos directamente el canvas
     canvas.style.display = 'inline-block';
 
-    const ctx = canvas.getContext('2d');
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    JsBarcode(ctx, code, {
+    JsBarcode(canvas, code, {
       format: "CODE128",
       width: 2,
       height: 80,
