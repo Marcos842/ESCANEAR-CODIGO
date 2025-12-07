@@ -1,68 +1,76 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>Escáner + Generador Códigos</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <title>Escáner LEDdecodigodebarras</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- Estilos -->
-    <link rel="stylesheet" href="estilo.css">
+  <!-- Estilos muy simples, puedes usar tu propio CSS -->
+  <style>
+    body { font-family: Arial, sans-serif; background:#f5f5f5; margin:0; }
+    h1 { text-align:center; margin:20px 0; }
+    .container { max-width:900px; margin:0 auto 40px; background:#fff; padding:20px; box-shadow:0 0 10px rgba(0,0,0,.1); }
+    .center { text-align:center; }
+    button { margin:5px; padding:10px 18px; border:none; border-radius:4px; cursor:pointer; }
+    .btn-green { background:#28a745; color:#fff; }
+    .btn-red { background:#dc3545; color:#fff; }
+    .btn-blue { background:#007bff; color:#fff; }
+    input[type="text"] { width:80%; max-width:320px; padding:8px; }
+    canvas { border:1px solid #ccc; margin:10px; }
+  </style>
 
-    <!-- Librerías externas -->
-    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+  <!-- Librerías externas -->
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
 </head>
 <body>
-    <h1>🖥️ Escáner LEDdecodigodebarras</h1>
 
-    <!-- ESCÁNER -->
-    <div id="reader"></div>
-    <button id="btnStart">📱 Iniciar Escáner</button>
-    <button id="btnStop" class="danger">⏹️ Detener</button>
+  <h1>🖥️ Escáner LEDdecodigodebarras</h1>
 
-    <!-- RESULTADO ESCÁNER -->
-    <div id="result" style="display:none;">
-        <h2>✅ Código Escaneado:</h2>
-        <p id="code"></p>
+  <!-- SONIDO BEEP -->
+  <audio id="beepAudio" src="beep.mp3" preload="auto"></audio>
 
-        <button id="btnCopyCode">📋 Copiar</button>
-        <button id="btnSendAPI">📤 Enviar a API</button>
-
-        <div id="shareButtons">
-            <h3>🔗 Compartir código</h3>
-            <button id="btnShareNative">📤 Compartir (móvil)</button>
-            <button id="btnShareWhatsApp">🟢 WhatsApp</button>
-            <button id="btnShareTelegram">🔵 Telegram</button>
-            <button id="btnDownloadTxt">⬇️ Descargar .txt</button>
-            <button id="btnShareImage">🖼️ Compartir imagen</button>
-        </div>
+  <!-- BLOQUE ESCÁNER -->
+  <div class="container">
+    <div class="center">
+      <button id="btnStart" class="btn-green">📱 Iniciar Escáner</button>
+      <button id="btnStop" class="btn-red">⏹️ Detener</button>
     </div>
 
-    <!-- GENERADOR -->
-    <div id="generator">
-        <h2>➕ Crear Código de Barras</h2>
-        <input type="text" id="codigoInput" placeholder="Escribe código (ej: 1234567890123)" maxlength="40">
-        <br>
-        <button id="btnGenBarcode">📊 Generar Código Barras</button>
-        <button id="btnGenQR">📱 Generar QR</button>
+    <div id="reader" style="width:320px; max-width:100%; margin:20px auto;"></div>
 
-        <canvas id="barcodeCanvas" width="300" height="100" style="display:none;"></canvas>
-        <canvas id="qrCanvas" width="200" height="200" style="display:none;"></canvas>
-        <br>
-        <button id="btnAddExcel" style="display:none;">📊 Agregar a Excel</button>
-        <button id="btnDownloadPng">⬇️ Descargar PNG</button>
-        <button id="btnDownloadJpg">⬇️ Descargar JPG</button>
+    <div id="result" class="center" style="display:none; margin-top:20px;">
+      <h2>✅ Código Escaneado:</h2>
+      <p id="code" style="font-size:24px; font-weight:bold;"></p>
+
+      <button id="btnCopyCode" class="btn-blue">📋 Copiar</button>
+      <button id="btnSendForm" class="btn-green">📥 Guardar en Form</button>
+    </div>
+  </div>
+
+  <!-- BLOQUE GENERADOR -->
+  <div class="container">
+    <div class="center">
+      <h2>➕ Crear Código de Barras</h2>
+      <input type="text" id="codigoInput" placeholder="Escribe código (ej: 1234567890123)" maxlength="40">
+      <br>
+      <button id="btnGenBarcode" class="btn-green">📊 Generar Código Barras</button>
+      <button id="btnGenQR" class="btn-blue">📱 Generar QR</button>
     </div>
 
-    <!-- EXCEL -->
-    <div id="excelSection" style="display:none;">
-        <h2>📋 Lista para Excel / Google Sheets</h2>
-        <button id="btnDownloadExcel">💾 Descargar Excel</button>
-        <button id="btnCopyExcel">📋 Copiar TSV</button>
-        <div id="excelPreview"></div>
+    <div class="center">
+      <canvas id="barcodeCanvas" width="300" height="100" style="display:none;"></canvas>
+      <canvas id="qrCanvas" width="200" height="200" style="display:none;"></canvas>
     </div>
 
-    <!-- Lógica JS -->
-    <script src="script.js"></script>
+    <div class="center">
+      <button id="btnDownloadPng" class="btn-blue">⬇️ Descargar PNG</button>
+      <button id="btnDownloadJpg" class="btn-blue">⬇️ Descargar JPG</button>
+    </div>
+  </div>
+
+  <!-- Lógica principal -->
+  <script src="script.js"></script>
 </body>
 </html>
