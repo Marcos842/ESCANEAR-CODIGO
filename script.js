@@ -84,6 +84,7 @@ function copyCode() {
 
 // ================== GENERADOR BARRAS ==================
 let jsBarcodeLoaded = false;
+
 function ensureJsBarcode(callback) {
   if (jsBarcodeLoaded) return callback();
   const script = document.createElement('script');
