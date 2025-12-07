@@ -1,105 +1,105 @@
-/* Estilo general */
+/* Estilos generales */
 body {
-    font-family: Arial, Helvetica, sans-serif;
-    text-align: center;
-    padding: 20px;
-    margin: 0;
-    background: #f0f0f0;
+  font-family: Arial, sans-serif;
+  background: #f5f5f5;
+  margin: 0;
 }
 
-/* Contenedor principal */
 h1 {
-    margin-top: 10px;
-    margin-bottom: 10px;
+  text-align: center;
+  margin: 20px 0;
 }
 
-/* Lector de cámara */
-#reader {
-    width: 100%;
-    max-width: 500px;
-    margin: 20px auto;
+/* Contenedores */
+.container {
+  max-width: 900px;
+  margin: 0 auto 40px;
+  background: #ffffff;
+  padding: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-/* Voltear video para que te veas como espejo */
-#reader video {
-    transform: scaleX(-1);
+.center {
+  text-align: center;
 }
 
-/* Tarjetas / cajas blancas */
-#result,
-#generator,
-#excelSection {
-    background: #ffffff;
-    padding: 20px;
-    margin: 20px auto;
-    border-radius: 10px;
-    max-width: 700px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-}
-
-/* Texto del código escaneado */
-#code {
-    font-size: 28px;
-    font-weight: bold;
-    word-wrap: break-word;
-}
-
-/* Botones generales */
+/* Botones */
 button {
-    background: #4CAF50;
-    color: #ffffff;
-    padding: 12px 25px;
-    font-size: 16px;
-    border: none;
-    border-radius: 5px;
-    margin: 8px;
-    cursor: pointer;
-    transition: background 0.2s ease, transform 0.1s ease;
+  margin: 5px;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
 }
 
-button:hover {
-    background: #45a049;
-    transform: translateY(-1px);
+.btn-green {
+  background: #28a745;
+  color: #ffffff;
 }
 
-/* Botón de peligro (detener) */
-button.danger {
-    background: #f44336;
+.btn-red {
+  background: #dc3545;
+  color: #ffffff;
 }
 
-button.danger:hover {
-    background: #da190b;
+.btn-blue {
+  background: #007bff;
+  color: #ffffff;
 }
 
-/* Inputs */
-input {
-    padding: 10px;
-    font-size: 16px;
-    border: 2px solid #dddddd;
-    border-radius: 5px;
-    width: 260px;
-    max-width: 90%;
-    margin: 10px;
+/* Input */
+input[type="text"] {
+  width: 80%;
+  max-width: 320px;
+  padding: 8px;
+  margin-top: 10px;
 }
 
-/* Canvases para código de barras y QR */
+/* Lector */
+.reader-box {
+  width: 320px;
+  max-width: 100%;
+  margin: 20px auto;
+}
+
+/* Resultado escaneo */
+.result-box {
+  display: none; /* JS lo cambia a block */
+  margin-top: 20px;
+}
+
+.code-text {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+/* Canvases */
+.canvas-box canvas {
+  border: 1px solid #ccc;
+  margin: 10px;
+}
+
+/* Ocultar por defecto, JS los muestra cuando se generan */
 #barcodeCanvas,
 #qrCanvas {
-    border: 2px solid #4CAF50;
-    margin: 10px;
-    background: #ffffff;
+  display: none;
 }
 
-/* Vista previa tipo Excel */
-#excelPreview {
-    text-align: left;
-    max-width: 680px;
-    margin: 10px auto 0 auto;
-    background: #fafafa;
-    border: 1px solid #e0e0e0;
-    border-radius: 5px;
-    padding: 10px;
-    font-family: "Courier New", monospace;
-    font-size: 14px;
-    white-space: pre-wrap;
+/* Responsive sencillo */
+@media (max-width: 600px) {
+  .container {
+    margin: 0 10px 30px;
+    padding: 15px;
+  }
+
+  button {
+    width: 100%;
+    max-width: 260px;
+  }
+
+  .canvas-box canvas {
+    width: 90% !important;
+    height: auto !important;
+  }
 }
