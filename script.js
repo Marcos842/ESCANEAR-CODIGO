@@ -1,6 +1,7 @@
 // ================== CONFIG GOOGLE FORM ==================
 const GOOGLE_FORM_ACTION =
   "https://docs.google.com/forms/d/e/1FAIpQLSe_0E3-hsF4nbq0nArjQvuVe2ckG2xfz3pvU-v5z9edLAVbtA/formResponse";
+
 const GOOGLE_ENTRY_CODE = "entry.1389898450";
 
 // ================== VARIABLES ==================
@@ -169,6 +170,7 @@ btnStart.addEventListener('click', startScan);
 btnStop.addEventListener('click', stopScan);
 
 btnCopyCode.addEventListener('click', copyCode);
+
 btnSendForm.addEventListener('click', () => {
   const code = codeDiv.textContent.trim();
   if (!code) return alert('No hay código escaneado');
