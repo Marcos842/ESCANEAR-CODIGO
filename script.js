@@ -29,12 +29,13 @@ function playBeep() {
   beepAudio.play().catch(() => {});
 }
 
-// ================== ESCÁNER ==================
+// ================== ESCÁNER (SIN ESPEJO) ==================
 async function startScan() {
   scanner = new Html5Qrcode("reader");
   const config = {
     fps: 10,
-    qrbox: { width: 250, height: 180 }
+    qrbox: { width: 250, height: 180 },
+    disableFlip: true   // quita el modo espejo
   };
 
   try {
@@ -106,8 +107,13 @@ function generateBarcode() {
   ensureJsBarcode(() => {
     const canvas = document.getElementById('barcodeCanvas');
     if (!canvas) return alert('No se encontró el canvas de barras');
+
     canvas.style.display = 'inline-block';
-    JsBarcode(canvas, code, {
+
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    JsBarcode(ctx, code, {
       format: "CODE128",
       width: 2,
       height: 80,
