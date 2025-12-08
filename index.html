@@ -16,14 +16,22 @@
 
   <h1>🖥️ Escáner LEDdecodigodebarras</h1>
 
-  <!-- SONIDO BEEP (archivo beet.mp3 en la raíz del repo) -->
+  <!-- SONIDO BEEP -->
   <audio id="beepAudio" src="beet.mp3" preload="auto"></audio>
 
   <!-- BLOQUE ESCÁNER -->
   <div class="container">
     <div class="center">
+      <!-- Tus botones originales del escáner -->
       <button id="btnStart" class="btn-green">📱 Iniciar Escáner</button>
       <button id="btnStop" class="btn-red">⏹️ Detener</button>
+
+      <!-- Botón para mostrar/ocultar el generador -->
+      <br><br>
+      <button class="btn btn-primary" type="button" onclick="toggleCrearCodigo()">
+        ➕ Crear Código de Barras
+      </button>
+      <br><br>
     </div>
 
     <div id="reader" class="reader-box"></div>
@@ -36,34 +44,51 @@
       <button id="btnSendForm" class="btn-green">📥 Guardar en Form</button>
     </div>
   </div>
-
-  <!-- BLOQUE GENERADOR -->
+  <!-- BLOQUE CONTADOR DE EQUIPOS -->
   <div class="container">
     <div class="center">
-      <h2>➕ Crear Código de Barras</h2>
+      <h3>Equipos / Ventas</h3>
+
+      <input id="nuevoEquipo" type="text" placeholder="Nombre del equipo">
+      <button id="btnAddEquipo" class="btn-green">Agregar equipo</button>
+    </div>
+
+    <div id="listaEquipos" class="center" style="margin-top:10px;">
+      <!-- Aquí se crearán los botones de equipos -->
+    </div>
+  </div>
+
+  <!-- BLOQUE GENERADOR (oculto al inicio) -->
+  <div class="container crear-codigo-contenedor" id="seccionCrearCodigo">
+    <div class="center">
+      <h3>➕ Crear Código de Barras</h3>
+
       <input
         type="text"
         id="codigoInput"
         placeholder="Escribe código (ej: 1234567890123)"
         maxlength="40">
       <br>
-      <button id="btnGenBarcode" class="btn-green">📊 Generar Código Barras</button>
-      <button id="btnGenQR" class="btn-blue">📱 Generar QR</button>
-    </div>
+      <div class="center">
+  <button id="btnGenBarcode" class="btn-green">📊 Generar Código Barras</button>
+  <button id="btnGenQR" class="btn-blue">📱 Generar QR</button>
+</div>
 
-    <!-- Canvases correctos -->
-    <!-- Canvases correctos -->
 <div class="center canvas-box">
   <canvas id="barcodeCanvas" width="300" height="100"></canvas>
   <canvas id="qrCanvas" width="200" height="200"></canvas>
 </div>
 
+<div class="center">
+  <button id="btnClearBarcode" class="btn-red">🗑️ Eliminar código de barras</button>
+  <button id="btnClearQR" class="btn-red">🗑️ Eliminar QR</button>
+</div>
 
-    <div class="center">
-      <button id="btnDownloadPng" class="btn-blue">⬇️ Descargar PNG</button>
-      <button id="btnDownloadJpg" class="btn-blue">⬇️ Descargar JPG</button>
-    </div>
-  </div>
+<div class="center">
+  <button id="btnDownloadPng" class="btn-blue">⬇️ Descargar PNG</button>
+  <button id="btnDownloadJpg" class="btn-blue">⬇️ Descargar JPG</button>
+</div>
+
 
   <!-- Lógica principal -->
   <script src="script.js"></script>
