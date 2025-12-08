@@ -2,7 +2,9 @@
 const GOOGLE_FORM_ACTION =
   "https://docs.google.com/forms/d/e/1FAIpQLSe_0E3-hsF4nbq0nArjQvuVe2ckG2xfz3pvU-v5z9edLAVbtA/formResponse";
 
-const GOOGLE_ENTRY_CODE = "entry.1389898450";
+const GOOGLE_ENTRY_CODE = "entry.1389898450";        // Código escaneado
+const GOOGLE_ENTRY_EQUIPO = "entry.1581479368";      // Campo EQUIPO
+
 
 // ================== VARIABLES ==================
 let scanner = null;
@@ -22,6 +24,7 @@ const btnGenQR = document.getElementById('btnGenQR');
 const btnDownloadPng = document.getElementById('btnDownloadPng');
 const btnDownloadJpg = document.getElementById('btnDownloadJpg');
 
+
 // ================== SONIDO ==================
 function playBeep() {
   if (!beepAudio) return;
@@ -29,9 +32,9 @@ function playBeep() {
   beepAudio.play().catch(() => {});
 }
 
+
 // ================== ESCÁNER (SIN ESPEJO) ==================
 async function startScan() {
-  // indicar formatos que queremos (QR + barras comunes)
   const formatsToSupport = [
     Html5QrcodeSupportedFormats.QR_CODE,
     Html5QrcodeSupportedFormats.CODE_128,
@@ -42,7 +45,6 @@ async function startScan() {
     Html5QrcodeSupportedFormats.UPC_E
   ];
 
-  // pasar formatsToSupport EN EL CONSTRUCTOR
   scanner = new Html5Qrcode("reader", {
     formatsToSupport: formatsToSupport,
     experimentalFeatures: {
@@ -52,7 +54,7 @@ async function startScan() {
 
   const config = {
     fps: 10,
-    qrbox: { width: 300, height: 120 }, // más ancho para barras
+    qrbox: { width: 300, height: 120 },
     disableFlip: true
   };
 
@@ -61,21 +63,19 @@ async function startScan() {
       { facingMode: "environment" },
       config,
       (decodedText, decodedResult) => {
-        // callback de éxito
         playBeep();
         codeDiv.textContent = decodedText;
         resultDiv.style.display = 'block';
         stopScan();
       },
       (errorMessage) => {
-        // callback de error por frame; lo dejamos vacío
+        // errores por frame, ignorar
       }
     );
   } catch (err) {
     alert("Error cámara: " + err);
   }
 }
-
 
 function stopScan() {
   if (scanner) {
@@ -90,11 +90,17 @@ function stopScan() {
   }
 }
 
+
 // ================== ENVIAR A GOOGLE FORM ==================
-function sendToGoogleForm(codigo) {
+function sendToGoogleForm(codigo, equipoSeleccionado) {
   if (!codigo) return;
+
   const formData = new FormData();
   formData.append(GOOGLE_ENTRY_CODE, codigo);
+
+  if (equipoSeleccionado) {
+    formData.append(GOOGLE_ENTRY_EQUIPO, equipoSeleccionado);
+  }
 
   fetch(GOOGLE_FORM_ACTION, {
     method: 'POST',
@@ -103,6 +109,7 @@ function sendToGoogleForm(codigo) {
   }).catch(() => {});
 }
 
+
 // ================== UTILIDADES TEXTO ==================
 function copyCode() {
   const text = codeDiv.textContent.trim();
@@ -110,6 +117,7 @@ function copyCode() {
   navigator.clipboard.writeText(text)
     .then(() => alert('Código copiado.'));
 }
+
 
 // ================== GENERADOR BARRAS ==================
 let jsBarcodeLoaded = false;
@@ -130,8 +138,6 @@ function generateBarcode() {
     const canvas = document.getElementById('barcodeCanvas');
     if (!canvas) return alert('No se encontró el canvas de barras');
 
-    // JsBarcode SOLO acepta canvas, img, svg o un selector;
-    // aquí le pasamos directamente el canvas
     canvas.style.display = 'inline-block';
 
     JsBarcode(canvas, code, {
@@ -143,6 +149,7 @@ function generateBarcode() {
     });
   });
 }
+
 
 // ================== GENERADOR QR ==================
 function generateQR() {
@@ -183,6 +190,7 @@ function generateQR() {
   }
 }
 
+
 // ================== DESCARGAS IMAGEN ==================
 function downloadCanvasImage(tipo = 'barras', format = 'png') {
   const canvas = tipo === 'qr'
@@ -202,7 +210,160 @@ function downloadCanvasImage(tipo = 'barras', format = 'png') {
   a.click();
 }
 
-// ================== EVENTOS ==================
+
+// ================== MOSTRAR / OCULTAR SECCIÓN CREAR CÓDIGO ==================
+function toggleCrearCodigo() {
+  const seccion = document.getElementById('seccionCrearCodigo');
+  if (seccion.style.display === 'none' || seccion.style.display === '') {
+    seccion.style.display = 'block';
+  } else {
+    seccion.style.display = 'none';
+  }
+}
+
+
+// ================== ELIMINAR CÓDIGOS (CANVAS) ==================
+const btnClearBarcode = document.getElementById('btnClearBarcode');
+const btnClearQR = document.getElementById('btnClearQR');
+const barcodeCanvas = document.getElementById('barcodeCanvas');
+const qrCanvas = document.getElementById('qrCanvas');
+
+if (btnClearBarcode && barcodeCanvas) {
+  const barcodeCtx = barcodeCanvas.getContext('2d');
+  btnClearBarcode.addEventListener('click', () => {
+    barcodeCtx.clearRect(0, 0, barcodeCanvas.width, barcodeCanvas.height);
+    barcodeCanvas.style.display = 'none';
+  });
+}
+
+if (btnClearQR && qrCanvas) {
+  const qrCtx = qrCanvas.getContext('2d');
+  btnClearQR.addEventListener('click', () => {
+    qrCtx.clearRect(0, 0, qrCanvas.width, qrCanvas.height);
+    qrCanvas.style.display = 'none';
+  });
+}
+
+
+// ================== CONTADOR DE EQUIPOS ==================
+const inputEquipo = document.getElementById('nuevoEquipo');
+const btnAddEquipo = document.getElementById('btnAddEquipo');
+const listaEquipos = document.getElementById('listaEquipos');
+
+const equipos = {};
+let ultimoEquipoSeleccionado = null;
+
+// Cargar desde localStorage
+const equiposGuardados = localStorage.getItem('equiposAcademia');
+if (equiposGuardados) {
+  Object.assign(equipos, JSON.parse(equiposGuardados));
+}
+
+function guardarEquipos() {
+  localStorage.setItem('equiposAcademia', JSON.stringify(equipos));
+}
+
+if (btnAddEquipo && inputEquipo && listaEquipos) {
+  btnAddEquipo.addEventListener('click', () => {
+    const nombre = inputEquipo.value.trim();
+    if (!nombre) return alert('Escribe un nombre de equipo');
+    if (equipos[nombre]) return alert('Ese equipo ya existe');
+
+    equipos[nombre] = 0;
+    inputEquipo.value = '';
+    guardarEquipos();
+    renderEquipos();
+  });
+}
+
+function renderEquipos() {
+  // total general
+  let total = 0;
+  Object.values(equipos).forEach(v => total += v);
+  const totalSpan = document.getElementById('totalVentas');
+  if (totalSpan) {
+    totalSpan.textContent = `Total entradas: ${total}`;
+  }
+
+  listaEquipos.innerHTML = '';
+
+  Object.keys(equipos).forEach(nombre => {
+    const contenedor = document.createElement('div');
+    contenedor.style.display = 'inline-block';
+    contenedor.style.margin = '5px';
+
+    // Botón principal (contar ventas)
+    const btn = document.createElement('button');
+    btn.className = 'btn-blue';
+    btn.textContent = `${nombre.toUpperCase()} (${equipos[nombre]})`;
+
+    btn.addEventListener('click', () => {
+      equipos[nombre] += 1;
+      btn.textContent = `${nombre.toUpperCase()} (${equipos[nombre]})`;
+      ultimoEquipoSeleccionado = nombre;
+      guardarEquipos();
+      renderEquipos();
+    });
+
+    // Botón EDITAR nombre y contador
+    const btnEdit = document.createElement('button');
+    btnEdit.textContent = '✏️';
+    btnEdit.style.marginLeft = '3px';
+
+    btnEdit.addEventListener('click', () => {
+      const nuevoNombre = prompt('Nuevo nombre para el equipo:', nombre) ?? '';
+      const limpioNombre = nuevoNombre.trim() || nombre;
+
+      const nuevoContadorStr = prompt('Nuevo valor del contador:', equipos[nombre]);
+      if (nuevoContadorStr === null) return;
+      const nuevoContador = parseInt(nuevoContadorStr, 10);
+      if (isNaN(nuevoContador) || nuevoContador < 0) {
+        return alert('El contador debe ser un número entero mayor o igual a 0');
+      }
+
+      if (equipos[limpioNombre] && limpioNombre !== nombre) {
+        return alert('Ya existe un equipo con ese nombre');
+      }
+
+      delete equipos[nombre];
+      equipos[limpioNombre] = nuevoContador;
+
+      if (ultimoEquipoSeleccionado === nombre) {
+        ultimoEquipoSeleccionado = limpioNombre;
+      }
+
+      guardarEquipos();
+      renderEquipos();
+    });
+
+    // Botón ELIMINAR equipo
+    const btnDel = document.createElement('button');
+    btnDel.textContent = '❌';
+    btnDel.style.marginLeft = '3px';
+
+    btnDel.addEventListener('click', () => {
+      if (!confirm(`¿Eliminar el equipo "${nombre}" y su contador?`)) return;
+      delete equipos[nombre];
+      if (ultimoEquipoSeleccionado === nombre) {
+        ultimoEquipoSeleccionado = null;
+      }
+      guardarEquipos();
+      renderEquipos();
+    });
+
+    contenedor.appendChild(btn);
+    contenedor.appendChild(btnEdit);
+    contenedor.appendChild(btnDel);
+
+    listaEquipos.appendChild(contenedor);
+  });
+}
+
+// pintar equipos al cargar
+renderEquipos();
+
+
+// ================== EVENTOS GENERALES ==================
 btnStart.addEventListener('click', startScan);
 btnStop.addEventListener('click', stopScan);
 
@@ -211,8 +372,13 @@ btnCopyCode.addEventListener('click', copyCode);
 btnSendForm.addEventListener('click', () => {
   const code = codeDiv.textContent.trim();
   if (!code) return alert('No hay código escaneado');
-  sendToGoogleForm(code);
-  alert('Código enviado al formulario');
+
+  if (!ultimoEquipoSeleccionado) {
+    return alert('Primero selecciona un equipo (toca su botón de ventas)');
+  }
+
+  sendToGoogleForm(code, ultimoEquipoSeleccionado);
+  alert(`Código y equipo "${ultimoEquipoSeleccionado}" enviados al formulario`);
 });
 
 btnGenBarcode.addEventListener('click', generateBarcode);
