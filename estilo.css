@@ -103,3 +103,12 @@ input[type="text"] {
     height: auto !important;
   }
 }
+/* oculto por defecto la sección de crear código */
+.crear-codigo-contenedor {
+  display: none;
+  margin-top: 20px;
+}
+#listaEquipos button {
+  min-width: 140px;
+}
+
