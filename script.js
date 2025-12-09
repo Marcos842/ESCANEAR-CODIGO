@@ -53,8 +53,8 @@ async function startScan() {
   });
 
   const config = {
-    fps: 35,
-    qrbox: { width: 320, height: 110 },
+    fps: 30,
+    qrbox: { width: 320, height: 170 },
     disableFlip: true
   };
 
@@ -280,88 +280,129 @@ function renderEquipos() {
   // total general
   let total = 0;
   Object.values(equipos).forEach(v => total += v);
+
   const totalSpan = document.getElementById('totalVentas');
   if (totalSpan) {
     totalSpan.textContent = `Total entradas: ${total}`;
   }
 
+  // actualizar círculo de tickets y monto
+  const totalTicketsCircle = document.getElementById('totalTicketsCircle');
+  const totalMontoCircle = document.getElementById('totalMontoCircle');
+  if (totalTicketsCircle && totalMontoCircle) {
+    totalTicketsCircle.textContent = total;
+    totalMontoCircle.textContent = total * 3; // S/3 por ticket
+  }
+
+  // limpiar lista
   listaEquipos.innerHTML = '';
 
+  // crear filas por equipo
   Object.keys(equipos).forEach(nombre => {
     const contenedor = document.createElement('div');
-    contenedor.style.display = 'inline-block';
-    contenedor.style.margin = '5px';
+    contenedor.style.display = 'flex';
+    contenedor.style.alignItems = 'center';
+    contenedor.style.gap = '5px';
+    contenedor.style.margin = '5px 0';
 
-    // Botón principal (contar ventas)
-    const btn = document.createElement('button');
-    btn.className = 'btn-blue';
-    btn.textContent = `${nombre.toUpperCase()} (${equipos[nombre]})`;
-
-    btn.addEventListener('click', () => {
+    // Botón + (sumar)
+    const btnMas = document.createElement('button');
+    btnMas.textContent = '+';
+    btnMas.className = 'btn-icon btn-plus';
+    btnMas.addEventListener('click', () => {
       equipos[nombre] += 1;
-      btn.textContent = `${nombre.toUpperCase()} (${equipos[nombre]})`;
       ultimoEquipoSeleccionado = nombre;
       guardarEquipos();
       renderEquipos();
     });
 
-    // Botón EDITAR nombre y contador
+    // Botón - (restar)
+    const btnMenos = document.createElement('button');
+    btnMenos.textContent = '-';
+    btnMenos.className = 'btn-icon btn-minus';
+    btnMenos.addEventListener('click', () => {
+      if (equipos[nombre] > 0) {
+        equipos[nombre] -= 1;
+        ultimoEquipoSeleccionado = nombre;
+        guardarEquipos();
+        renderEquipos();
+      }
+    });
+
+    // Botón principal (nombre y contador)
+    const btnEquipo = document.createElement('button');
+    btnEquipo.className = 'btn-blue';
+    btnEquipo.textContent = `${nombre.toUpperCase()} (${equipos[nombre]})`;
+    btnEquipo.addEventListener('click', () => {
+      equipos[nombre] += 1;
+      ultimoEquipoSeleccionado = nombre;
+      guardarEquipos();
+      renderEquipos();
+    });
+
+    // Botón EDITAR
     const btnEdit = document.createElement('button');
-    btnEdit.textContent = '✏️';
-    btnEdit.style.marginLeft = '3px';
-
+    btnEdit.className = 'btn-icon btn-edit';
+    btnEdit.textContent = '✏ Editar';
     btnEdit.addEventListener('click', () => {
-      const nuevoNombre = prompt('Nuevo nombre para el equipo:', nombre) ?? '';
-      const limpioNombre = nuevoNombre.trim() || nombre;
-
-      const nuevoContadorStr = prompt('Nuevo valor del contador:', equipos[nombre]);
-      if (nuevoContadorStr === null) return;
-      const nuevoContador = parseInt(nuevoContadorStr, 10);
-      if (isNaN(nuevoContador) || nuevoContador < 0) {
-        return alert('El contador debe ser un número entero mayor o igual a 0');
+      const nuevoNombre = prompt('Nuevo nombre del equipo:', nombre);
+      if (!nuevoNombre) return;
+      if (equipos[nuevoNombre]) {
+        alert('Ya existe un equipo con ese nombre');
+        return;
       }
-
-      if (equipos[limpioNombre] && limpioNombre !== nombre) {
-        return alert('Ya existe un equipo con ese nombre');
-      }
-
+      equipos[nuevoNombre] = equipos[nombre];
       delete equipos[nombre];
-      equipos[limpioNombre] = nuevoContador;
-
-      if (ultimoEquipoSeleccionado === nombre) {
-        ultimoEquipoSeleccionado = limpioNombre;
-      }
-
       guardarEquipos();
       renderEquipos();
     });
 
-    // Botón ELIMINAR equipo
-    const btnDel = document.createElement('button');
-    btnDel.textContent = '❌';
-    btnDel.style.marginLeft = '3px';
-
-    btnDel.addEventListener('click', () => {
-      if (!confirm(`¿Eliminar el equipo "${nombre}" y su contador?`)) return;
-      delete equipos[nombre];
-      if (ultimoEquipoSeleccionado === nombre) {
-        ultimoEquipoSeleccionado = null;
+    // Botón ELIMINAR
+    const btnDelete = document.createElement('button');
+    btnDelete.className = 'btn-icon btn-delete';
+    btnDelete.textContent = '✖';
+    btnDelete.addEventListener('click', () => {
+      if (confirm(`¿Eliminar el equipo "${nombre}"?`)) {
+        delete equipos[nombre];
+        guardarEquipos();
+        renderEquipos();
       }
-      guardarEquipos();
-      renderEquipos();
     });
 
-    contenedor.appendChild(btn);
+    // Agregar al contenedor en orden
+    contenedor.appendChild(btnMas);
+    contenedor.appendChild(btnMenos);
+    contenedor.appendChild(btnEquipo);
     contenedor.appendChild(btnEdit);
-    contenedor.appendChild(btnDel);
+    contenedor.appendChild(btnDelete);
 
     listaEquipos.appendChild(contenedor);
   });
 }
 
+
+
 // pintar equipos al cargar
 renderEquipos();
 
+// ================== REGISTRO MANUAL DE CÓDIGO ==================
+
+const btnRegistrarManual = document.getElementById('btnRegistrarManual');
+const inputCodigoManual = document.getElementById('codigoManual');
+
+if (btnRegistrarManual && inputCodigoManual) {
+  btnRegistrarManual.addEventListener('click', () => {
+    const codigo = inputCodigoManual.value.trim();
+    if (!codigo) {
+      alert('Escribe o pega el código primero');
+      return;
+    }
+    // usa último equipo seleccionado si existe
+    sendToGoogleForm(codigo, ultimoEquipoSeleccionado);
+    alert('Código registrado correctamente.');
+    inputCodigoManual.value = '';
+  });
+}
 
 // ================== EVENTOS GENERALES ==================
 btnStart.addEventListener('click', startScan);
@@ -397,8 +438,6 @@ btnDownloadJpg.addEventListener('click', () => {
     : 'qr';
   downloadCanvasImage(tipo, 'jpg');
 });
-
-
 
 
 
