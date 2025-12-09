@@ -43,6 +43,14 @@
       <button id="btnCopyCode" class="btn-blue">📋 Copiar</button>
       <button id="btnSendForm" class="btn-green">📥 Guardar en Form</button>
     </div>
+
+    <div class="manual-box">
+  <p>Si el lector no reconoce el ticket, escribe manualmente el codigo o el nombre del equipo:</p>
+  <input type="text" id="codigoManual" placeholder="ESCRIBE EL NOMBRE DEL EQUIPO">
+  <button id="btnRegistrarManual" class="btn-green">Registrar código manual</button>
+</div>
+
+
   </div>
   <!-- BLOQUE CONTADOR DE EQUIPOS -->
   <div class="container">
@@ -52,6 +60,12 @@
       <input id="nuevoEquipo" type="text" placeholder="Nombre del equipo">
       <button id="btnAddEquipo" class="btn-green">Agregar equipo</button>
     </div>
+<div class="resumen-circular">
+  <div class="resumen-circle">
+    <div class="resumen-line">Tickets: <span id="totalTicketsCircle">0</span></div>
+    <div class="resumen-line">Monto: S/<span id="totalMontoCircle">0</span></div>
+  </div>
+</div>
 
     <div id="listaEquipos" class="center" style="margin-top:10px;">
       <!-- Aquí se crearán los botones de equipos -->
