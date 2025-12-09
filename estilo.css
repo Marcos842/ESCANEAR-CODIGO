@@ -1,114 +1,114 @@
-/* Estilos generales */
-body {
-  font-family: Arial, sans-serif;
-  background: #f5f5f5;
-  margin: 0;
-}
+  /* Estilos generales */
+  body {
+    font-family: Arial, sans-serif;
+    background: #f5f5f5;
+    margin: 0;
+  }
 
-h1 {
-  text-align: center;
-  margin: 20px 0;
-}
+  h1 {
+    text-align: center;
+    margin: 20px 0;
+  }
 
-/* Contenedores */
-.container {
-  max-width: 900px;
-  margin: 0 auto 40px;
-  background: #ffffff;
-  padding: 20px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
-.center {
-  text-align: center;
-}
-
-/* Botones */
-button {
-  margin: 5px;
-  padding: 10px 18px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
-}
-
-.btn-green {
-  background: #28a745;
-  color: #ffffff;
-}
-
-.btn-red {
-  background: #dc3545;
-  color: #ffffff;
-}
-
-.btn-blue {
-  background: #007bff;
-  color: #ffffff;
-}
-
-/* Input */
-input[type="text"] {
-  width: 80%;
-  max-width: 320px;
-  padding: 8px;
-  margin-top: 10px;
-}
-
-/* Lector */
-.reader-box {
-  width: 320px;
-  max-width: 100%;
-  margin: 20px auto;
-}
-
-/* Resultado escaneo */
-.result-box {
-  display: none; /* JS lo cambia a block */
-  margin-top: 20px;
-}
-
-.code-text {
-  font-size: 24px;
-  font-weight: bold;
-}
-
-/* Canvases */
-.canvas-box canvas {
-  border: 1px solid #ccc;
-  margin: 10px;
-}
-
-/* Ocultar por defecto, JS los muestra cuando se generan */
-#barcodeCanvas,
-#qrCanvas {
-  display: none;
-}
-
-/* Responsive sencillo */
-@media (max-width: 600px) {
+  /* Contenedores */
   .container {
-    margin: 0 10px 30px;
-    padding: 15px;
+    max-width: 900px;
+    margin: 0 auto 40px;
+    background: #ffffff;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   }
 
+  .center {
+    text-align: center;
+  }
+
+  /* Botones */
   button {
-    width: 100%;
-    max-width: 260px;
+    margin: 5px;
+    padding: 10px 18px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
   }
 
-  .canvas-box canvas {
-    width: 90% !important;
-    height: auto !important;
+  .btn-green {
+    background: #28a745;
+    color: #ffffff;
   }
-}
-/* oculto por defecto la sección de crear código */
-.crear-codigo-contenedor {
-  display: none;
-  margin-top: 20px;
-}
-#listaEquipos button {
-  min-width: 140px;
-}
+
+  .btn-red {
+    background: #dc3545;
+    color: #ffffff;
+  }
+
+  .btn-blue {
+    background: #007bff;
+    color: #ffffff;
+  }
+
+  /* Input */
+  input[type="text"] {
+    width: 80%;
+    max-width: 320px;
+    padding: 8px;
+    margin-top: 10px;
+  }
+
+  /* Lector */
+  .reader-box {
+    width: 100%;
+    max-width: 360px;
+    margin: 20px auto;
+  }
+
+  /* Resultado escaneo */
+  .result-box {
+    display: none; /* JS lo cambia a block */
+    margin-top: 20px;
+  }
+
+  .code-text {
+    font-size: 24px;
+    font-weight: bold;
+  }
+
+  /* Canvases */
+  .canvas-box canvas {
+    border: 1px solid #ccc;
+    margin: 10px;
+  }
+
+  /* Ocultar por defecto, JS los muestra cuando se generan */
+  #barcodeCanvas,
+  #qrCanvas {
+    display: none;
+  }
+
+  /* Responsive sencillo */
+  @media (max-width: 600px) {
+    .container {
+      margin: 0 10px 30px;
+      padding: 15px;
+    }
+
+    button {
+      width: 100%;
+      max-width: 260px;
+    }
+
+    .canvas-box canvas {
+      width: 90% !important;
+      height: auto !important;
+    }
+  }
+  /* oculto por defecto la sección de crear código */
+  .crear-codigo-contenedor {
+    display: none;
+    margin-top: 20px;
+  }
+  #listaEquipos button {
+    min-width: 140px;
+  }
 
