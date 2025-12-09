@@ -1,121 +1,143 @@
-  /* Estilos generales */
-  body {
-    font-family: Arial, sans-serif;
-    background: #f5f5f5;
-    margin: 0;
-  }
+/* Estilos generales */
+body {
+  font-family: Arial, sans-serif;
+  background: #f5f5f5;
+  margin: 0;
+}
 
-  h1 {
-    text-align: center;
-    margin: 20px 0;
-  }
+h1 {
+  text-align: center;
+  margin: 20px 0;
+}
 
-  /* Contenedores */
-  .container {
-    max-width: 900px;
-    margin: 0 auto 40px;
-    background: #ffffff;
-    padding: 20px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  }
+/* Contenedores */
+.container {
+  max-width: 900px;
+  margin: 0 auto 40px;
+  background: #ffffff;
+  padding: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
 
-  .center {
-    text-align: center;
-  }
+.center {
+  text-align: center;
+}
 
-  /* Botones */
-  button {
-    margin: 5px;
-    padding: 10px 18px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-  }
+/* Botones */
+button {
+  margin: 5px;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
 
-  .btn-green {
-    background: #28a745;
-    color: #ffffff;
-  }
+.btn-green {
+  background: #28a745;
+  color: #ffffff;
+}
 
-  .btn-red {
-    background: #dc3545;
-    color: #ffffff;
-  }
+.btn-red {
+  background: #dc3545;
+  color: #ffffff;
+}
 
-  .btn-blue {
-    background: #007bff;
+.btn-blue {
+  background: #007bff;
   color: #ffffff;
   padding: 8px 20px;
   border: none;
-  border-radius: 999px; /* hace efecto pastilla/casi circular */
+  border-radius: 999px; /* efecto pastilla */
   cursor: pointer;
   font-size: 14px;
-  }
+}
 
-  /* Input */
-  input[type="text"] {
-    width: 80%;
-    max-width: 320px;
-    padding: 8px;
-    margin-top: 10px;
-  }
+/* Botones icono (+, -, editar, eliminar) */
+.btn-icon {
+  min-width: 36px;
+  height: 32px;
+  border-radius: 16px;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 10px;
+}
 
-  /* Lector */
-  .reader-box {
-    width: 100%;
-    max-width: 360px;
-    margin: 20px auto;
-  }
+.btn-plus {
+  background: #28a745;
+  color: #fff;
+}
 
-  /* Resultado escaneo */
-  .result-box {
-    display: none; /* JS lo cambia a block */
-    margin-top: 20px;
-  }
+.btn-minus {
+  background: #ffc107;
+  color: #333;
+}
 
-  .code-text {
-    font-size: 24px;
-    font-weight: bold;
-  }
+.btn-edit {
+  background: #e2e6ea;
+  color: #333;
+  font-size: 14px;
+}
 
-  /* Canvases */
-  .canvas-box canvas {
-    border: 1px solid #ccc;
-    margin: 10px;
-  }
+.btn-delete {
+  background: #dc3545;
+  color: #fff;
+}
 
-  /* Ocultar por defecto, JS los muestra cuando se generan */
-  #barcodeCanvas,
-  #qrCanvas {
-    display: none;
-  }
+/* Input */
+input[type="text"] {
+  width: 80%;
+  max-width: 320px;
+  padding: 8px;
+  margin-top: 10px;
+}
 
-  /* Responsive sencillo */
-  @media (max-width: 600px) {
-    .container {
-      margin: 0 10px 30px;
-      padding: 15px;
-    }
+/* Lector */
+.reader-box {
+  width: 100%;
+  max-width: 380px;
+  margin: 20px auto;
+}
 
-    button {
-      width: 100%;
-      max-width: 260px;
-    }
+/* Resultado escaneo */
+.result-box {
+  display: none; /* JS lo cambia a block */
+  margin-top: 20px;
+}
 
-    .canvas-box canvas {
-      width: 90% !important;
-      height: auto !important;
-    }
-  }
-  /* oculto por defecto la sección de crear código */
-  .crear-codigo-contenedor {
-    display: none;
-    margin-top: 20px;
-  }
-  #listaEquipos button {
-    min-width: 140px;
-  }
+.code-text {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+/* Canvases */
+.canvas-box canvas {
+  border: 1px solid #ccc;
+  margin: 10px;
+}
+
+/* Ocultar por defecto, JS los muestra cuando se generan */
+#barcodeCanvas,
+#qrCanvas {
+  display: none;
+}
+
+/* Sección crear código (oculta por defecto) */
+.crear-codigo-contenedor {
+  display: none;
+  margin-top: 20px;
+}
+
+/* Botones de la lista de equipos */
+#listaEquipos button {
+  min-width: 140px;
+}
+
+/* Resumen circular tickets / monto */
 .resumen-circular {
   text-align: center;
   margin: 20px 0;
@@ -126,7 +148,7 @@
   height: 120px;
   border-radius: 50%;
   border: 3px solid #007bff;
-  margin: 0 auto;
+  margin: 10px auto 0;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -141,3 +163,26 @@
   margin: 2px 0;
 }
 
+/* Responsive sencillo */
+@media (max-width: 600px) {
+  .container {
+    margin: 0 5px 30px;
+    padding: 15px 10px;
+  }
+
+  button {
+    width: 100%;
+    max-width: 260px;
+  }
+
+  .canvas-box canvas {
+    width: 90% !important;
+    height: auto !important;
+  }
+
+  .resumen-circle {
+    width: 110px;
+    height: 110px;
+    font-size: 12px;
+  }
+}
