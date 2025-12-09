@@ -45,7 +45,12 @@
 
   .btn-blue {
     background: #007bff;
-    color: #ffffff;
+  color: #ffffff;
+  padding: 8px 20px;
+  border: none;
+  border-radius: 999px; /* hace efecto pastilla/casi circular */
+  cursor: pointer;
+  font-size: 14px;
   }
 
   /* Input */
@@ -111,4 +116,28 @@
   #listaEquipos button {
     min-width: 140px;
   }
+.resumen-circular {
+  text-align: center;
+  margin: 20px 0;
+}
+
+.resumen-circle {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 3px solid #007bff;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-size: 13px;
+  font-weight: bold;
+  color: #333;
+  background: #f9fbff;
+}
+
+.resumen-line {
+  margin: 2px 0;
+}
 
