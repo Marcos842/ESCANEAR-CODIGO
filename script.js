@@ -302,6 +302,7 @@ function renderEquipos() {
     const contenedor = document.createElement('div');
     contenedor.style.display = 'flex';
     contenedor.style.alignItems = 'center';
+     contenedor.style.flexWrap = 'wrap';
     contenedor.style.gap = '5px';
     contenedor.style.margin = '5px 0';
 
