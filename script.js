@@ -53,8 +53,8 @@ async function startScan() {
   });
 
   const config = {
-    fps: 10,
-    qrbox: { width: 300, height: 120 },
+    fps: 15,
+    qrbox: { width: 320, height: 240 },
     disableFlip: true
   };
 
