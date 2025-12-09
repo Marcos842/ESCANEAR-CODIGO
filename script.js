@@ -53,8 +53,8 @@ async function startScan() {
   });
 
   const config = {
-    fps: 30,
-    qrbox: { width: 280, height: 200 },
+    fps: 40,
+    qrbox: { width: 300, height: 120 },
     disableFlip: true
   };
 
@@ -397,5 +397,6 @@ btnDownloadJpg.addEventListener('click', () => {
     : 'qr';
   downloadCanvasImage(tipo, 'jpg');
 });
+
 
 
