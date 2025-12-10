@@ -134,7 +134,7 @@ input[type="text"] {
 
 /* Botones de la lista de equipos */
 #listaEquipos button {
-  min-width: 140px;
+  min-width: auto;
 }
 
 /* Resumen circular tickets / monto */
@@ -186,3 +186,57 @@ input[type="text"] {
     font-size: 12px;
   }
 }
+/* CONTENEDOR DE TARJETAS DE EQUIPOS */
+#listaEquipos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 12px;
+}
+
+/* UNA TARJETA POR EQUIPO */
+.equipo-card {
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,.08);
+  padding: 10px 12px;
+}
+
+/* NOMBRE DEL EQUIPO ARRIBA */
+.equipo-card-header {
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+/* CUERPO: CONTADOR + BOTONES */
+.equipo-card-body {
+  display: grid;
+  grid-template-columns: 1fr 0.6fr 0.6fr 0.9fr 0.5fr;
+  gap: 6px;
+  align-items: center;
+}
+.equipo-card button {
+  padding: 6px 8px;
+  font-size: 13px;
+}
+
+
+.equipo-contador {
+  font-size: 13px;
+}
+
+/* AJUSTE RESPONSIVE PARA CELULAR */
+@media (max-width: 600px) {
+  #listaEquipos {
+    grid-template-columns: 1fr;
+  }
+
+  .equipo-card-body {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto auto;
+  }
+
+  .equipo-contador {
+    grid-column: 1 / 3;
+  }
+}
+
