@@ -286,41 +286,52 @@ function renderEquipos() {
     totalSpan.textContent = `Total entradas: ${total}`;
   }
 
-  // actualizar círculo de tickets y monto
+  // actualizar círculo
   const totalTicketsCircle = document.getElementById('totalTicketsCircle');
   const totalMontoCircle = document.getElementById('totalMontoCircle');
   if (totalTicketsCircle && totalMontoCircle) {
     totalTicketsCircle.textContent = total;
-    totalMontoCircle.textContent = total * 3; // S/3 por ticket
+    totalMontoCircle.textContent = total * 3;
   }
 
-  // limpiar lista
+  // limpiar contenedor
   listaEquipos.innerHTML = '';
 
-  // crear filas por equipo
+  // UNA TARJETA POR EQUIPO
   Object.keys(equipos).forEach(nombre => {
-    const contenedor = document.createElement('div');
-    contenedor.style.display = 'flex';
-    contenedor.style.alignItems = 'center';
-     contenedor.style.flexWrap = 'wrap';
-    contenedor.style.gap = '5px';
-    contenedor.style.margin = '5px 0';
+    const card = document.createElement('div');
+    card.className = 'equipo-card';
 
-    // Botón + (sumar)
+    const header = document.createElement('div');
+    header.className = 'equipo-card-header';
+    header.textContent = nombre.toUpperCase();
+    card.appendChild(header);
+
+    const body = document.createElement('div');
+    body.className = 'equipo-card-body';
+
+    // contador
+    const contador = document.createElement('span');
+    contador.className = 'equipo-contador';
+    contador.textContent = `Tickets: ${equipos[nombre]}`;
+    body.appendChild(contador);
+
+    // +
     const btnMas = document.createElement('button');
     btnMas.textContent = '+';
-    btnMas.className = 'btn-icon btn-plus';
+    btnMas.className = 'btn btn-green';
     btnMas.addEventListener('click', () => {
       equipos[nombre] += 1;
       ultimoEquipoSeleccionado = nombre;
       guardarEquipos();
       renderEquipos();
     });
+    body.appendChild(btnMas);
 
-    // Botón - (restar)
+    // -
     const btnMenos = document.createElement('button');
     btnMenos.textContent = '-';
-    btnMenos.className = 'btn-icon btn-minus';
+    btnMenos.className = 'btn btn-yellow';
     btnMenos.addEventListener('click', () => {
       if (equipos[nombre] > 0) {
         equipos[nombre] -= 1;
@@ -329,21 +340,11 @@ function renderEquipos() {
         renderEquipos();
       }
     });
+    body.appendChild(btnMenos);
 
-    // Botón principal (nombre y contador)
-    const btnEquipo = document.createElement('button');
-    btnEquipo.className = 'btn-blue';
-    btnEquipo.textContent = `${nombre.toUpperCase()} (${equipos[nombre]})`;
-    btnEquipo.addEventListener('click', () => {
-      equipos[nombre] += 1;
-      ultimoEquipoSeleccionado = nombre;
-      guardarEquipos();
-      renderEquipos();
-    });
-
-    // Botón EDITAR
+    // EDITAR
     const btnEdit = document.createElement('button');
-    btnEdit.className = 'btn-icon btn-edit';
+    btnEdit.className = 'btn btn-edit';
     btnEdit.textContent = '✏ Editar';
     btnEdit.addEventListener('click', () => {
       const nuevoNombre = prompt('Nuevo nombre del equipo:', nombre);
@@ -357,10 +358,11 @@ function renderEquipos() {
       guardarEquipos();
       renderEquipos();
     });
+    body.appendChild(btnEdit);
 
-    // Botón ELIMINAR
+    // ELIMINAR
     const btnDelete = document.createElement('button');
-    btnDelete.className = 'btn-icon btn-delete';
+    btnDelete.className = 'btn btn-red';
     btnDelete.textContent = '✖';
     btnDelete.addEventListener('click', () => {
       if (confirm(`¿Eliminar el equipo "${nombre}"?`)) {
@@ -369,17 +371,14 @@ function renderEquipos() {
         renderEquipos();
       }
     });
+    body.appendChild(btnDelete);
 
-    // Agregar al contenedor en orden
-    contenedor.appendChild(btnMas);
-    contenedor.appendChild(btnMenos);
-    contenedor.appendChild(btnEquipo);
-    contenedor.appendChild(btnEdit);
-    contenedor.appendChild(btnDelete);
-
-    listaEquipos.appendChild(contenedor);
+    card.appendChild(body);
+    listaEquipos.appendChild(card);
   });
 }
+
+
 
 
 
