@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>🔐 Acceso al Sistema</title>
+
+  <!-- Usa tu estilo global -->
+  <link rel="stylesheet" href="estilo.css">
+</head>
+<body class="login-body">
+  <div class="login-top-right">
+    <a href="soporte.html" class="login-support-link">Soporte</a>
+    <button id="btnThemeToggle" class="btn-theme-toggle">🌙</button>
+  </div>
+
+  <div class="login-container">
+    <!-- aquí tu tarjeta de login existente -->
+  </div>
+
+
+  <!-- aquí sigue tu contenedor de login existente -->
+
+  <div class="login-box">
+    
+    <h2>🔒 Acceso al Sistema</h2>
+
+    <select id="userRole">
+      <option value="">👤 Selecciona tu rango</option>
+      <option value="ceo">👑 CEO</option>
+      <option value="supervisor">🛡️ Supervisor</option>
+      <option value="agente">💼 Agente de Ventas</option>
+    </select>
+
+    <div class="password-wrapper">
+      <input type="password" id="userPass" placeholder="🔑 Contraseña">
+      <button type="button" id="togglePass" class="toggle-pass">👁️</button>
+    </div>
+
+    <button id="btnLogin" class="btn-login">🚀 ENTRAR AL ESCÁNER</button>
+    <div id="loginError">❌ Credenciales incorrectas</div>
+
+    <div class="roles-info">
+      <strong>📋 Permisos:</strong><br>
+      👑 <strong>CEO:</strong> Acceso total<br>
+      🛡️ <strong>Supervisor:</strong> Todo menos eliminar grupo (pide clave CEO)<br>
+      💼 <strong>Agente:</strong> Solo escanear / crear grupo (pide clave Supervisor/CEO)
+    </div>
+  </div>
+
+  <script src="login.js"></script>
+</body>
+</html>

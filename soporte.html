@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Soporte - Escáner LEDdecodigodebarras</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="stylesheet" href="estilo.css">
+</head>
+<body class="login-body">
+  <div class="support-box">
+    <h2>🛠️ Soporte técnico</h2>
+
+    <section class="support-section">
+      <h3>📞 Contacto rápido</h3>
+      <p><strong>Responsable:</strong> Marcos Barboza</p>
+      <p><strong>Teléfono / WhatsApp:</strong> 904874232</p>
+      <p><strong>Correo:</strong> <a href="mailto:mb2571079@gmail.com">mb2571079@gmail.com</a></p>
+      <p><strong>Horario partidos (Liga Distrital):</strong><br>
+        Sábado: durante el desarrollo de los partidos.<br>
+        Domingo: atención a pendientes desde las 10:00 a. m.
+      </p>
+
+      <button id="btnWhatsapp" class="btn-whatsapp">
+        💬 Escribir por WhatsApp
+      </button>
+    </section>
+
+    <section class="support-section">
+      <h3>📝 Reportar un problema</h3>
+      <p>Envía un reporte para que quede registrado en el sistema y pueda revisarse con calma.</p>
+
+      <div class="support-form">
+        <label for="nombreAgente">Nombre del agente</label>
+        <input type="text" id="nombreAgente" placeholder="Ej. Juan Pérez">
+
+        <label for="descripcionProblema">Describe el problema</label>
+        <textarea id="descripcionProblema" rows="4" placeholder="Qué pasó, en qué momento, con qué equipo, etc."></textarea>
+
+        <button id="btnEnviarSoporte" class="btn-green">
+          📤 Enviar a formulario
+        </button>
+      </div>
+    </section>
+
+    <section class="support-section">
+      <h3>❓ Guía rápida</h3>
+      <ul class="support-list">
+        <li>Si la cámara no abre, revisa permisos del navegador y recarga la página.</li>
+        <li>Si el código no se lee, mejora la luz, acerca el ticket y limpia la cámara.</li>
+        <li>Si te equivocas en el contador, usa el botón “-” o pide al Supervisor ajuste manual.</li>
+      </ul>
+    </section>
+
+    <div class="support-footer-links">
+      <a href="index.html">⬅ Volver al escáner</a>
+    </div>
+  </div>
+
+  <script src="soporte.js"></script>
+  <script src="theme.js"></script>
+</body>
+</html>
