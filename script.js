@@ -1,10 +1,75 @@
+// ================== ROLES Y BARRA SUPERIOR ==================
+
+// Verificar rol actual
+function getRolActual() {
+  return sessionStorage.getItem('rol') || null;
+}
+
+function esCEO() { return getRolActual() === 'ceo'; }
+function esSupervisor() { return getRolActual() === 'supervisor'; }
+
+// Mostrar barra de rol (debajo del h1 en HTML)
+function mostrarRolActual(rol) {
+  const barra = document.createElement('div');
+  barra.id = 'roleBar';
+  barra.innerHTML = `
+    <span>👑 Rol: ${sessionStorage.getItem('usuario')} | 
+    <button onclick="sessionStorage.clear(); window.location.href='login.html';" 
+      style="background:red;color:white;border:none;padding:5px 10px;border-radius:5px;cursor:pointer;">
+      Salir
+    </button>
+    </span>`;
+  barra.style.cssText = 'background:#1976d2;color:white;padding:10px;text-align:center;margin:10px 0;border-radius:8px;';
+  document.body.insertBefore(barra, document.querySelector('h1').nextSibling);
+}
+
+// Ajustar barra superior según sesión
+function actualizarBarraSesion() {
+  const rol = getRolActual();
+  const linkSesion = document.getElementById('linkSesion');
+  const linkInicio = document.getElementById('linkInicio');
+  const linkSoporte = document.getElementById('linkSoporte');
+
+  if (!linkSesion) return; // por si se llama antes de cargar el DOM
+
+  if (rol) {
+    // Usuario dentro: mostrar Cerrar sesión
+    linkSesion.textContent = 'Cerrar sesión';
+    linkSesion.href = '#';
+    linkSesion.onclick = function (e) {
+      e.preventDefault();
+      sessionStorage.clear();
+      window.location.href = 'login.html';
+    };
+  } else {
+    // No logueado: mostrar Iniciar sesión
+    linkSesion.textContent = 'Iniciar sesión';
+    linkSesion.href = 'login.html';
+    linkSesion.onclick = null;
+  }
+  // Inicio siempre lleva a index.html
+  if (linkInicio) {
+    linkInicio.href = 'index.html';
+  }
+
+  // Actualizar título visible con el rango
+  const topTitulo = document.getElementById('topTitulo');
+  if (topTitulo) {
+    const nombreRol = sessionStorage.getItem('usuario'); // CEO / Supervisor / Agente
+    if (rol && nombreRol) {
+      topTitulo.textContent = `🖥️ Escáner LEDdecodigodebarras (${nombreRol})`;
+    } else {
+      topTitulo.textContent = '🖥️ Escáner LEDdecodigodebarras';
+    }
+  }
+}
+
 // ================== CONFIG GOOGLE FORM ==================
 const GOOGLE_FORM_ACTION =
   "https://docs.google.com/forms/d/e/1FAIpQLSe_0E3-hsF4nbq0nArjQvuVe2ckG2xfz3pvU-v5z9edLAVbtA/formResponse";
 
 const GOOGLE_ENTRY_CODE = "entry.1389898450";        // Código escaneado
 const GOOGLE_ENTRY_EQUIPO = "entry.1581479368";      // Campo EQUIPO
-
 
 // ================== VARIABLES ==================
 let scanner = null;
@@ -24,14 +89,12 @@ const btnGenQR = document.getElementById('btnGenQR');
 const btnDownloadPng = document.getElementById('btnDownloadPng');
 const btnDownloadJpg = document.getElementById('btnDownloadJpg');
 
-
 // ================== SONIDO ==================
 function playBeep() {
   if (!beepAudio) return;
   beepAudio.currentTime = 0;
   beepAudio.play().catch(() => {});
 }
-
 
 // ================== ESCÁNER (SIN ESPEJO) ==================
 async function startScan() {
@@ -62,13 +125,13 @@ async function startScan() {
     await scanner.start(
       { facingMode: "environment" },
       config,
-      (decodedText, decodedResult) => {
+      (decodedText) => {
         playBeep();
         codeDiv.textContent = decodedText;
         resultDiv.style.display = 'block';
         stopScan();
       },
-      (errorMessage) => {
+      () => {
         // errores por frame, ignorar
       }
     );
@@ -90,7 +153,6 @@ function stopScan() {
   }
 }
 
-
 // ================== ENVIAR A GOOGLE FORM ==================
 function sendToGoogleForm(codigo, equipoSeleccionado) {
   if (!codigo) return;
@@ -109,7 +171,6 @@ function sendToGoogleForm(codigo, equipoSeleccionado) {
   }).catch(() => {});
 }
 
-
 // ================== UTILIDADES TEXTO ==================
 function copyCode() {
   const text = codeDiv.textContent.trim();
@@ -117,7 +178,6 @@ function copyCode() {
   navigator.clipboard.writeText(text)
     .then(() => alert('Código copiado.'));
 }
-
 
 // ================== GENERADOR BARRAS ==================
 let jsBarcodeLoaded = false;
@@ -149,7 +209,6 @@ function generateBarcode() {
     });
   });
 }
-
 
 // ================== GENERADOR QR ==================
 function generateQR() {
@@ -190,7 +249,6 @@ function generateQR() {
   }
 }
 
-
 // ================== DESCARGAS IMAGEN ==================
 function downloadCanvasImage(tipo = 'barras', format = 'png') {
   const canvas = tipo === 'qr'
@@ -210,7 +268,6 @@ function downloadCanvasImage(tipo = 'barras', format = 'png') {
   a.click();
 }
 
-
 // ================== MOSTRAR / OCULTAR SECCIÓN CREAR CÓDIGO ==================
 function toggleCrearCodigo() {
   const seccion = document.getElementById('seccionCrearCodigo');
@@ -220,7 +277,6 @@ function toggleCrearCodigo() {
     seccion.style.display = 'none';
   }
 }
-
 
 // ================== ELIMINAR CÓDIGOS (CANVAS) ==================
 const btnClearBarcode = document.getElementById('btnClearBarcode');
@@ -244,7 +300,6 @@ if (btnClearQR && qrCanvas) {
   });
 }
 
-
 // ================== CONTADOR DE EQUIPOS ==================
 const inputEquipo = document.getElementById('nuevoEquipo');
 const btnAddEquipo = document.getElementById('btnAddEquipo');
@@ -261,6 +316,39 @@ if (equiposGuardados) {
 
 function guardarEquipos() {
   localStorage.setItem('equiposAcademia', JSON.stringify(equipos));
+}
+
+// === NUEVO: helper para guardar tickets/monto en cada card ===
+function setDatosEquipo(card, tickets, monto) {
+  card.dataset.tickets = tickets;
+  card.dataset.monto = monto;
+}
+
+// === NUEVO: calcula equipo top y actualiza <p id="lblTopEquipo"> ===
+function actualizarTopEquipo() {
+  let topNombre = '—';
+  let topMonto = -1;
+
+  document.querySelectorAll('.equipo-card').forEach(card => {
+    const header = card.querySelector('.equipo-card-header');
+    if (!header) return;
+    const nombre = header.textContent.trim();
+    const monto = Number(card.dataset.monto || 0);
+
+    if (monto > topMonto) {
+      topMonto = monto;
+      topNombre = nombre;
+    }
+  });
+
+  const lbl = document.getElementById('lblTopEquipo');
+  if (!lbl) return;
+
+  if (topMonto >= 0) {
+    lbl.textContent = `Equipo top: ${topNombre} (S/ ${topMonto})`;
+  } else {
+    lbl.textContent = 'Equipo top: —';
+  }
 }
 
 if (btnAddEquipo && inputEquipo && listaEquipos) {
@@ -291,7 +379,7 @@ function renderEquipos() {
   const totalMontoCircle = document.getElementById('totalMontoCircle');
   if (totalTicketsCircle && totalMontoCircle) {
     totalTicketsCircle.textContent = total;
-    totalMontoCircle.textContent = total * 3;
+    totalMontoCircle.textContent = total * 3; // aquí usas tu precio por ticket
   }
 
   // limpiar contenedor
@@ -315,6 +403,13 @@ function renderEquipos() {
     contador.className = 'equipo-contador';
     contador.textContent = `Tickets: ${equipos[nombre]}`;
     body.appendChild(contador);
+
+    // calculamos monto de este equipo (tickets * 3)
+    let ticketsEquipo = equipos[nombre];
+    let montoEquipo = ticketsEquipo * 3;
+
+    // guardamos en data- atributos para usar en "equipo top"
+    setDatosEquipo(card, ticketsEquipo, montoEquipo);
 
     // +
     const btnMas = document.createElement('button');
@@ -347,6 +442,38 @@ function renderEquipos() {
     btnEdit.className = 'btn btn-edit';
     btnEdit.textContent = '✏ Editar';
     btnEdit.addEventListener('click', () => {
+      // Si ya es CEO o Supervisor, edita directo
+      if (!esCEO() && !esSupervisor()) {
+        // Agente: debe pedir permiso
+        const rolPermiso = prompt(
+          '🔐 Permiso requerido para EDITAR.\n' +
+          'Escribe "S" para Supervisor o "C" para CEO:'
+        );
+        if (!rolPermiso) return;
+
+        const tipo = rolPermiso.trim().toUpperCase();
+        let pass = prompt(
+          tipo === 'S'
+            ? 'Contraseña de SUPERVISOR:'
+            : 'Contraseña de CEO:'
+        );
+        if (!pass) return;
+
+        // Cambia estos valores para que coincidan con login.js
+        const PASS_SUPERVISOR = 'SupPucala2025';
+        const PASS_CEO = 'HALCO2025MARCOS';
+
+        const ok =
+          (tipo === 'S' && pass === PASS_SUPERVISOR) ||
+          (tipo === 'C' && pass === PASS_CEO);
+
+        if (!ok) {
+          alert('Contraseña incorrecta. No se puede editar el equipo.');
+          return;
+        }
+        // Si pasó la verificación, continúa y deja editar
+      }
+
       const nuevoNombre = prompt('Nuevo nombre del equipo:', nombre);
       if (!nuevoNombre) return;
       if (equipos[nuevoNombre]) {
@@ -365,6 +492,15 @@ function renderEquipos() {
     btnDelete.className = 'btn btn-red';
     btnDelete.textContent = '✖';
     btnDelete.addEventListener('click', () => {
+      // Solo CEO puede eliminar
+      const PASS_CEO = 'HALCO2025MARCOS'; // misma que login.js
+      if (!esCEO()) {
+        const pass = prompt('🔐 Solo el CEO puede eliminar equipos.\nContraseña de CEO:');
+        if (pass !== PASS_CEO) {
+          alert('Contraseña incorrecta. No se eliminó el equipo.');
+          return;
+        }
+      }
       if (confirm(`¿Eliminar el equipo "${nombre}"?`)) {
         delete equipos[nombre];
         guardarEquipos();
@@ -376,17 +512,15 @@ function renderEquipos() {
     card.appendChild(body);
     listaEquipos.appendChild(card);
   });
+
+  // actualizar equipo top cada vez que se re-renderiza la lista
+  actualizarTopEquipo();
 }
-
-
-
-
 
 // pintar equipos al cargar
 renderEquipos();
 
 // ================== REGISTRO MANUAL DE CÓDIGO ==================
-
 const btnRegistrarManual = document.getElementById('btnRegistrarManual');
 const inputCodigoManual = document.getElementById('codigoManual');
 
@@ -438,9 +572,3 @@ btnDownloadJpg.addEventListener('click', () => {
     : 'qr';
   downloadCanvasImage(tipo, 'jpg');
 });
-
-
-
-
-
-
