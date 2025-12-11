@@ -371,25 +371,34 @@ input[type="text"] {
   color: #000000;
 }
 
-/* Ojo para mostrar/ocultar contraseña */
 .password-wrapper {
   position: relative;
 }
 
+/* Espacio a la derecha para icono + X */
 .password-wrapper input {
-  padding-right: 45px;
+  width: 100%;
+  padding-right: 56px;
+  box-sizing: border-box;
 }
 
+/* Botón ojo a la derecha */
 .toggle-pass {
   position: absolute;
-  right: 10px;
   top: 50%;
+  right: 10px;
   transform: translateY(-50%);
   border: none;
   background: transparent;
   cursor: pointer;
-  font-size: 18px;
+  font-size: 16px;
+  line-height: 1;
+  width: 28px;              /* tamaño fijo */
+  height: 28px;             /* tamaño fijo */
+  padding: 0;
 }
+
+
 
 /* Barra superior (páginas internas) */
 .top-bar {
