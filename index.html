@@ -12,8 +12,47 @@
   <!-- Librerías externas -->
   <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+
+<!-- Verificar sesión al cargar -->
+<script>
+  function tituloPorRol(rol) {
+    const nombreRol = sessionStorage.getItem('usuario') || '';
+    if (rol && nombreRol) {
+      document.title = `(${nombreRol}) Escáner LEDdecodigodebarras`;
+    } else {
+      document.title = 'Escáner LEDdecodigodebarras';
+    }
+  }
+
+  window.onload = function () {
+    const rol = sessionStorage.getItem('rol');
+    actualizarBarraSesion();   // usa la barra de arriba
+
+    if (!rol) {
+      window.location.href = 'login.html';
+    } else {
+      // Cargar tu app normal
+      tituloPorRol(rol);       // cambia el título con el rango
+    }
+  }
+</script>
+
+
+
 </head>
 <body>
+<!-- BARRA SUPERIOR -->
+<nav class="top-bar">
+  <div class="top-left" id="topTitulo">
+    🖥️ Escáner LEDdecodigodebarras
+  </div>
+  <div class="top-right">
+    <a href="index.html" id="linkInicio">Inicio</a>
+    <a href="soporte.html" id="linkSoporte">Soporte</a>
+    <a href="login.html" id="linkSesion">Cerrar Sesion</a>
+     <button id="btnThemeToggle" class="btn-theme-toggle">🌙</button>
+  </div>
+</nav>
 
   <h1>🖥️ Escáner LEDdecodigodebarras</h1>
 
@@ -65,6 +104,8 @@
   <div class="resumen-circle">
     <div class="resumen-line">Tickets: <span id="totalTicketsCircle">0</span></div>
     <div class="resumen-line">Monto: S/<span id="totalMontoCircle">0</span></div>
+    <p id="lblTopEquipo">Equipo top: —</p>
+
   </div>
 </div>
 
@@ -108,5 +149,6 @@
 
   <!-- Lógica principal -->
   <script src="script.js"></script>
+  <script src="theme.js"></script>
 </body>
 </html>
