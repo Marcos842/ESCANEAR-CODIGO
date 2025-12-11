@@ -1,9 +1,46 @@
-/* Estilos generales */
+/* ================== VARIABLES Y BODY ================== */
+:root {
+  --bg-color: #f5f5f5;
+  --text-color: #000000;
+  --card-bg: #ffffff;
+}
+
 body {
   font-family: Arial, sans-serif;
-  background: #f5f5f5;
+  background-color: var(--bg-color);
+  color: var(--text-color);
   margin: 0;
 }
+
+/* Modo oscuro GLOBAL (se activa con body.dark-mode) */
+body.dark-mode {
+  --bg-color: #121212;
+  --text-color: #f5f5f5;
+  --card-bg: #1f1f1f;
+}
+
+body.dark-mode .top-bar {
+  background: #1c1c1c;
+  border-bottom-color: #333;
+}
+
+body.dark-mode a {
+  color: #90caf9;
+}
+
+body.dark-mode .btn-theme-toggle {
+  background: #333;
+  color: #ffeb3b;
+}
+
+/* Contenedores principales que usan tarjeta */
+.container,
+.login-box,
+.support-box {
+  background-color: var(--card-bg);
+}
+
+/* ================== ESTILOS GENERALES ESCÁNER ================== */
 
 h1 {
   text-align: center;
@@ -14,9 +51,19 @@ h1 {
 .container {
   max-width: 900px;
   margin: 0 auto 40px;
-  background: #ffffff;
   padding: 20px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+/* Texto principal en página de escáner */
+body:not(.login-body) {
+  color: var(--text-color);
+}
+
+body:not(.login-body) .container,
+body:not(.login-body) .equipo-card,
+body:not(.login-body) .resumen-circle {
+  background-color: var(--card-bg);
+  color: var(--text-color);
 }
 
 .center {
@@ -47,8 +94,7 @@ button {
   background: #007bff;
   color: #ffffff;
   padding: 8px 20px;
-  border: none;
-  border-radius: 999px; /* efecto pastilla */
+  border-radius: 999px;
   cursor: pointer;
   font-size: 14px;
 }
@@ -58,7 +104,6 @@ button {
   min-width: 36px;
   height: 32px;
   border-radius: 16px;
-  border: none;
   cursor: pointer;
   font-size: 16px;
   display: inline-flex;
@@ -105,7 +150,7 @@ input[type="text"] {
 
 /* Resultado escaneo */
 .result-box {
-  display: none; /* JS lo cambia a block */
+  display: none;
   margin-top: 20px;
 }
 
@@ -186,6 +231,7 @@ input[type="text"] {
     font-size: 12px;
   }
 }
+
 /* CONTENEDOR DE TARJETAS DE EQUIPOS */
 #listaEquipos {
   display: grid;
@@ -214,11 +260,11 @@ input[type="text"] {
   gap: 6px;
   align-items: center;
 }
+
 .equipo-card button {
   padding: 6px 8px;
   font-size: 13px;
 }
-
 
 .equipo-contador {
   font-size: 13px;
@@ -240,3 +286,271 @@ input[type="text"] {
   }
 }
 
+/* ================== ESTILOS LOGIN ================== */
+
+.login-body {
+  background: linear-gradient(135deg, #1976d2, #42a5f5);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Tarjeta de login SIEMPRE clara y texto oscuro (modo claro) */
+.login-box {
+  background: #ffffff;
+  padding: 40px;
+  border-radius: 20px;
+  max-width: 380px;
+  width: 90%;
+  text-align: center;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+  color: #000000;
+}
+
+.login-box h2 {
+  color: #1976d2;
+  margin-bottom: 25px;
+  font-size: 24px;
+}
+
+.login-box select,
+.login-box input[type="password"],
+.login-box input[type="text"] {
+  width: 100%;
+  padding: 15px;
+  margin: 12px 0;
+  border: 2px solid #ddd;
+  border-radius: 12px;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
+.login-box select:focus,
+.login-box input:focus {
+  border-color: #1976d2;
+  outline: none;
+}
+
+.btn-login {
+  width: 100%;
+  padding: 15px;
+  background: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.btn-login:hover {
+  background: #45a049;
+}
+
+.btn-login:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+#loginError {
+  color: #f44336;
+  margin-top: 15px;
+  display: none;
+}
+
+.roles-info {
+  background: #e3f2fd;
+  padding: 15px;
+  border-radius: 10px;
+  margin-top: 20px;
+  font-size: 14px;
+  line-height: 1.4;
+  text-align: left;
+  color: #000000;
+}
+
+/* Ojo para mostrar/ocultar contraseña */
+.password-wrapper {
+  position: relative;
+}
+
+.password-wrapper input {
+  padding-right: 45px;
+}
+
+.toggle-pass {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+/* Barra superior (páginas internas) */
+.top-bar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: #ffffff;
+  border-bottom: 1px solid #ddd;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 20px;
+  font-size: 14px;
+}
+
+.top-left {
+  font-weight: 700;
+}
+
+.top-right a {
+  margin-left: 15px;
+  text-decoration: none;
+  color: #333;
+  font-weight: 600;
+}
+
+.top-right a:hover {
+  color: #1976d2;
+}
+
+@media (max-width: 600px) {
+  .top-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+  }
+}
+
+/* ================== SOPORTE ================== */
+
+.support-box {
+  padding: 30px;
+  border-radius: 20px;
+  max-width: 700px;
+  width: 95%;
+  margin: 30px auto;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+}
+
+.support-box h2 {
+  text-align: center;
+  color: #1976d2;
+  margin-bottom: 20px;
+}
+
+.support-section {
+  margin-top: 20px;
+}
+
+.support-section h3 {
+  margin-bottom: 8px;
+}
+
+.support-form label {
+  display: block;
+  margin-top: 10px;
+  font-weight: 600;
+}
+
+.support-form input,
+.support-form textarea {
+  width: 100%;
+  padding: 10px;
+  margin-top: 4px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.support-form textarea {
+  resize: vertical;
+}
+
+.support-list {
+  padding-left: 20px;
+  font-size: 14px;
+}
+
+.support-footer-links {
+  margin-top: 25px;
+  text-align: center;
+}
+
+.support-footer-links a {
+  text-decoration: none;
+  color: #1976d2;
+  font-weight: 600;
+}
+
+.btn-whatsapp {
+  background: #25d366;
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+/* Botón modo oscuro */
+.btn-theme-toggle {
+  margin-left: 10px;
+  border: none;
+  background: #eee;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.btn-theme-toggle:hover {
+  background: #ddd;
+}
+
+/* Barra flotante arriba a la derecha solo para login */
+.login-top-right {
+  position: fixed;
+  top: 12px;
+  right: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 2000;
+}
+
+.login-support-link {
+  background: rgba(0,0,0,0.7);
+  color: #ffffff;
+  padding: 6px 12px;
+  border-radius: 20px;
+  text-decoration: none;
+  font-size: 13px;
+}
+
+.login-support-link:hover {
+  background: rgba(0,0,0,0.9);
+}
+
+/* Modo oscuro específico para la pantalla de login */
+body.login-body.dark-mode {
+  background: #121212;
+}
+
+body.login-body.dark-mode .login-box {
+  background: #1f1f1f;
+  color: #f5f5f5;
+}
+
+body.login-body.dark-mode .login-box h2 {
+  color: #90caf9;
+}
