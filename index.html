@@ -41,8 +41,11 @@
 
 </head>
 <body>
+  
 <!-- BARRA SUPERIOR -->
 <nav class="top-bar">
+  <span id="lblTiempoAgente"></span>
+
   <div class="top-left" id="topTitulo">
     🖥️ Escáner LEDdecodigodebarras
   </div>
@@ -53,6 +56,15 @@
      <button id="btnThemeToggle" class="btn-theme-toggle">🌙</button>
   </div>
 </nav>
+<div class="side-panel">
+  <button id="btnJugadores" class="side-btn">👟 Jugadores que ingresaron</button>
+  <button id="btnDirectiva" class="side-btn">🏆 Directiva que ingresaron</button>
+  <button id="btnClearResumen" class="btn btn-red btn-sm" style="margin-top:6px;">
+  Limpiar resumen
+</button>
+  <h4>Resumen por agente</h4>
+  <div id="panelAgentes"></div>
+</div>
 
   <h1>🖥️ Escáner LEDdecodigodebarras</h1>
 
@@ -65,13 +77,14 @@
       <!-- Tus botones originales del escáner -->
       <button id="btnStart" class="btn-green">📱 Iniciar Escáner</button>
       <button id="btnStop" class="btn-red">⏹️ Detener</button>
-
-      <!-- Botón para mostrar/ocultar el generador -->
-      <br><br>
+      
+      
+      
       <button class="btn btn-primary" type="button" onclick="toggleCrearCodigo()">
-        ➕ Crear Código de Barras
+        + Crear Código de Barras
+    </button>
       </button>
-      <br><br>
+      
     </div>
 
     <div id="reader" class="reader-box"></div>
@@ -82,13 +95,29 @@
 
       <button id="btnCopyCode" class="btn-blue">📋 Copiar</button>
       <button id="btnSendForm" class="btn-green">📥 Guardar en Form</button>
+      
+
+
     </div>
 
     <div class="manual-box">
-  <p>Si el lector no reconoce el ticket, escribe manualmente el codigo o el nombre del equipo:</p>
-  <input type="text" id="codigoManual" placeholder="ESCRIBE EL NOMBRE DEL EQUIPO">
-  <button id="btnRegistrarManual" class="btn-green">Registrar código manual</button>
+      </div>
+  <p>Si el lector no reconoce el ticket, escribe manualmente el código o el nombre del equipo:</p>
+   <div class="manual-inner">
+  <input type="text" id="codigoManual" placeholder="ESCRIBE EL NOMBRE DEL EQUIPO O CÓDIGO">
+
+  <br>
+
+  <!-- Público (como ahora) -->
+  <button id="btnRegistrarPublico" class="btn-green">Guardar Público</button>
+
+  <!-- Nuevo: jugador -->
+  <button id="btnRegistrarJugador" class="btn-blue">Guardar Jugador</button>
+
+  <!-- Nuevo: directiva -->
+  <button id="btnRegistrarDirectiva" class="btn-yellow">Guardar Directiva</button>
 </div>
+
 
 
   </div>
@@ -98,6 +127,9 @@
       <h3>Equipos / Ventas</h3>
 
       <input id="nuevoEquipo" type="text" placeholder="Nombre del equipo">
+      <input type="hidden" id="usuarioCodigo" name="USUARIO">
+      <input type="hidden" id="usuarioRango" name="RANGO_ENTRANTE">
+
       <button id="btnAddEquipo" class="btn-green">Agregar equipo</button>
     </div>
 <div class="resumen-circular">
@@ -112,7 +144,7 @@
     <div id="listaEquipos" style="margin-top:10px;">
   <!-- Aquí el JS agregará los equipos -->
 </div>
-
+</div>
 
 
   <!-- BLOQUE GENERADOR (oculto al inicio) -->
