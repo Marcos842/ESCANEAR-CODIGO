@@ -64,6 +64,28 @@ function actualizarBarraSesion() {
   }
 }
 
+const lblTiempo = document.getElementById('lblTiempoAgente'); // span en la top-bar
+const inicioSesion = Number(sessionStorage.getItem('inicioSesion') || 0);
+
+if (lblTiempo && inicioSesion) {
+  const actualizarTiempo = () => {
+    const diffMs = Date.now() - inicioSesion;
+    const totalSeg = Math.floor(diffMs / 1000);
+    const horas = Math.floor(totalSeg / 3600);
+    const mins = Math.floor((totalSeg % 3600) / 60);
+    const segs = totalSeg % 60;
+
+    const hh = String(horas).padStart(2, '0');
+    const mm = String(mins).padStart(2, '0');
+    const ss = String(segs).padStart(2, '0');
+
+    lblTiempo.textContent = `Tiempo activo: ${hh}:${mm}:${ss}`;
+  };
+
+  actualizarTiempo();               // al entrar
+  setInterval(actualizarTiempo, 1000); // cada 1 segundo
+}
+
 // ================== CONFIG GOOGLE FORM ==================
 const GOOGLE_FORM_ACTION =
   "https://docs.google.com/forms/d/e/1FAIpQLSe_0E3-hsF4nbq0nArjQvuVe2ckG2xfz3pvU-v5z9edLAVbtA/formResponse";
@@ -88,6 +110,43 @@ const btnGenBarcode = document.getElementById('btnGenBarcode');
 const btnGenQR = document.getElementById('btnGenQR');
 const btnDownloadPng = document.getElementById('btnDownloadPng');
 const btnDownloadJpg = document.getElementById('btnDownloadJpg');
+
+// === BOTONES PANEL LATERAL Y RESUMEN (SOLO CEO) ===
+const btnJugadores  = document.getElementById('btnJugadores');
+const btnDirectiva  = document.getElementById('btnDirectiva');
+const tituloResumen = document.querySelector('.side-panel h4');
+const panelAgentes  = document.getElementById('panelAgentes');
+
+if (!esCEO()) {
+  // Si NO es CEO, ocultamos todo lo sensible
+  if (btnJugadores)  btnJugadores.style.display  = 'none';
+  if (btnDirectiva)  btnDirectiva.style.display  = 'none';
+  if (tituloResumen) tituloResumen.style.display = 'none';
+  if (panelAgentes)  panelAgentes.style.display  = 'none';
+} else {
+  // Si es CEO, activamos botones y mostramos todo
+  if (btnJugadores) {
+    btnJugadores.addEventListener('click', () => {
+      window.open(
+        'https://docs.google.com/spreadsheets/d/1VE1dIGXNWXQzmPkGCAz9-7Nh3Zt-L5llNbc_gceCm9A/edit?resourcekey=&gid=1308734349#gid=1308734349',
+        '_blank'
+      );
+    });
+  }
+
+  if (btnDirectiva) {
+    btnDirectiva.addEventListener('click', () => {
+      window.open(
+        'https://docs.google.com/spreadsheets/d/1VE1dIGXNWXQzmPkGCAz9-7Nh3Zt-L5llNbc_gceCm9A/edit?resourcekey=&gid=1308734349#gid=1308734349',
+        '_blank'
+      );
+    });
+  }
+
+  if (tituloResumen) tituloResumen.style.display = '';
+  if (panelAgentes)  panelAgentes.style.display  = '';
+}
+
 
 // ================== SONIDO ==================
 function playBeep() {
@@ -153,18 +212,40 @@ function stopScan() {
   }
 }
 
-// ================== ENVIAR A GOOGLE FORM ==================
-function sendToGoogleForm(codigo, equipoSeleccionado) {
+// ENVIAR A GOOGLE FORM (público / jugador / directiva)
+const GOOGLEFORMACTION = 'https://docs.google.com/forms/d/e/1FAIpQLSe_0E3-hsF4nbq0nArjQvuVe2ckG2xfz3pvU-v5z9edLAVbtA/formResponse';
+
+const GOOGLEENTRYCODE     = 'entry.1389898450'; // Código escaneado
+const GOOGLEENTRYEQUIPO   = 'entry.1581479368'; // Equipo
+const GOOGLEENTRYJUGADOR  = 'entry.74934614';   // JUGADOR
+const GOOGLEENTRYDIRECTIVA = 'entry.822667573'; // DIRECTIVA
+
+/**
+ * tipoRegistro:
+ *  - 'publico'   -> solo código + equipo (como antes)
+ *  - 'jugador'   -> llena campo JUGADOR
+ *  - 'directiva' -> llena campo DIRECTIVA
+ */
+function sendToGoogleForm(codigo, equipoSeleccionado, tipoRegistro = 'publico', nombrePersona = '') {
   if (!codigo) return;
 
   const formData = new FormData();
-  formData.append(GOOGLE_ENTRY_CODE, codigo);
+  formData.append(GOOGLEENTRYCODE, codigo);
 
   if (equipoSeleccionado) {
-    formData.append(GOOGLE_ENTRY_EQUIPO, equipoSeleccionado);
+    formData.append(GOOGLEENTRYEQUIPO, equipoSeleccionado);
   }
 
-  fetch(GOOGLE_FORM_ACTION, {
+  // Limpiamos el texto por si acaso
+  const nombreLimpio = (nombrePersona || '').trim();
+
+  if (tipoRegistro === 'jugador' && nombreLimpio) {
+    formData.append(GOOGLEENTRYJUGADOR, nombreLimpio);
+  } else if (tipoRegistro === 'directiva' && nombreLimpio) {
+    formData.append(GOOGLEENTRYDIRECTIVA, nombreLimpio);
+  }
+
+  fetch(GOOGLEFORMACTION, {
     method: 'POST',
     mode: 'no-cors',
     body: formData
@@ -305,6 +386,14 @@ const inputEquipo = document.getElementById('nuevoEquipo');
 const btnAddEquipo = document.getElementById('btnAddEquipo');
 const listaEquipos = document.getElementById('listaEquipos');
 
+// registro por agente (usar código único)
+const nombreAgente = sessionStorage.getItem('codigo') || 'Sin código';
+const ventasPorAgente = JSON.parse(localStorage.getItem('ventasPorAgente') || '{}');
+
+function guardarVentasAgente() {
+  localStorage.setItem('ventasPorAgente', JSON.stringify(ventasPorAgente));
+}
+
 const equipos = {};
 let ultimoEquipoSeleccionado = null;
 
@@ -318,13 +407,13 @@ function guardarEquipos() {
   localStorage.setItem('equiposAcademia', JSON.stringify(equipos));
 }
 
-// === NUEVO: helper para guardar tickets/monto en cada card ===
+// helper para guardar tickets/monto en cada card
 function setDatosEquipo(card, tickets, monto) {
   card.dataset.tickets = tickets;
   card.dataset.monto = monto;
 }
 
-// === NUEVO: calcula equipo top y actualiza <p id="lblTopEquipo"> ===
+// calcula equipo top global (entre todos los equipos)
 function actualizarTopEquipo() {
   let topNombre = '—';
   let topMonto = -1;
@@ -350,6 +439,45 @@ function actualizarTopEquipo() {
     lbl.textContent = 'Equipo top: —';
   }
 }
+
+// panel lateral: resumen por agente
+function renderPanelAgentes() {
+  const panel = document.getElementById('panelAgentes');
+  if (!panel) return;
+
+  panel.innerHTML = '';
+
+  Object.keys(ventasPorAgente).forEach(nombre => {
+    const data = ventasPorAgente[nombre];
+    const div = document.createElement('div');
+    div.style.marginBottom = '6px';
+    div.style.padding = '4px 6px';
+    div.style.background = '#ffffff';
+    div.style.borderRadius = '6px';
+
+    const topEq = data.topEquipo || '—';
+    const fecha = data.fecha || 'sin fecha';
+    div.textContent = `${nombre}: ${data.tickets} tickets / S/ ${data.monto} / Top: ${topEq} / ${fecha}`;
+
+    // ESTA LÍNEA FALTABA
+    panel.appendChild(div);
+  });
+}
+
+
+// FECHA DE RESUMEN DE CUADRO QUE SOLO VE EL CEO // 
+const btnClearResumen = document.getElementById('btnClearResumen');
+if (btnClearResumen && esCEO()) {
+  btnClearResumen.addEventListener('click', () => {
+    if (!confirm('¿Borrar el resumen de agentes? Esto no borra los datos del Google Sheet.')) return;
+    Object.keys(ventasPorAgente).forEach(k => delete ventasPorAgente[k]);
+    guardarVentasAgente();
+    renderPanelAgentes();
+  });
+}
+
+
+
 
 if (btnAddEquipo && inputEquipo && listaEquipos) {
   btnAddEquipo.addEventListener('click', () => {
@@ -379,7 +507,7 @@ function renderEquipos() {
   const totalMontoCircle = document.getElementById('totalMontoCircle');
   if (totalTicketsCircle && totalMontoCircle) {
     totalTicketsCircle.textContent = total;
-    totalMontoCircle.textContent = total * 3; // aquí usas tu precio por ticket
+    totalMontoCircle.textContent = total * 3; // precio por ticket
   }
 
   // limpiar contenedor
@@ -418,24 +546,96 @@ function renderEquipos() {
     btnMas.addEventListener('click', () => {
       equipos[nombre] += 1;
       ultimoEquipoSeleccionado = nombre;
+
+      // registrar en ventasPorAgente
+      if (!ventasPorAgente[nombreAgente]) {
+  ventasPorAgente[nombreAgente] = {
+    tickets: 0,
+    monto: 0,
+    topEquipo: '—',
+    equipos: {},
+    fecha: new Date().toLocaleString('es-PE')
+  };
+}
+
+
+      const dataAgente = ventasPorAgente[nombreAgente];
+
+      // totales generales del agente
+      dataAgente.tickets += 1;
+      dataAgente.monto += 3; // precio por ticket
+
+      // detalle por equipo para ese agente
+      if (!dataAgente.equipos[nombre]) {
+        dataAgente.equipos[nombre] = 0;
+      }
+      dataAgente.equipos[nombre] += 1;
+
+      // recalcular equipo TOP del agente
+      let mejorEquipo = '—';
+      let maxTickets = -1;
+      Object.keys(dataAgente.equipos).forEach(eq => {
+        const t = dataAgente.equipos[eq];
+        if (t > maxTickets) {
+          maxTickets = t;
+          mejorEquipo = eq;
+        }
+      });
+      dataAgente.topEquipo = mejorEquipo;
+
+      // guardar y refrescar todo
+      guardarVentasAgente();
       guardarEquipos();
       renderEquipos();
+      renderPanelAgentes();
     });
     body.appendChild(btnMas);
 
     // -
-    const btnMenos = document.createElement('button');
-    btnMenos.textContent = '-';
-    btnMenos.className = 'btn btn-yellow';
-    btnMenos.addEventListener('click', () => {
-      if (equipos[nombre] > 0) {
-        equipos[nombre] -= 1;
-        ultimoEquipoSeleccionado = nombre;
-        guardarEquipos();
-        renderEquipos();
+const btnMenos = document.createElement('button');
+btnMenos.textContent = '-';
+btnMenos.className = 'btn btn-yellow';
+
+btnMenos.addEventListener('click', () => {
+  if (equipos[nombre] > 0) {
+    equipos[nombre] -= 1;
+    ultimoEquipoSeleccionado = nombre;
+
+    // Restar también al agente actual
+    const dataAgente = ventasPorAgente[nombreAgente];
+    if (dataAgente) {
+      if (dataAgente.tickets > 0) dataAgente.tickets -= 1;
+      if (dataAgente.monto > 0) dataAgente.monto -= 3;
+
+      if (dataAgente.equipos && dataAgente.equipos[nombre]) {
+        dataAgente.equipos[nombre] -= 1;
+        if (dataAgente.equipos[nombre] <= 0) {
+          delete dataAgente.equipos[nombre];
+        }
+
+        // recalcular equipo TOP del agente
+        let mejorEquipo = '—';
+        let maxTickets = -1;
+        Object.keys(dataAgente.equipos).forEach(eq => {
+          const t = dataAgente.equipos[eq];
+          if (t > maxTickets) {
+            maxTickets = t;
+            mejorEquipo = eq;
+          }
+        });
+        dataAgente.topEquipo = mejorEquipo;
       }
-    });
-    body.appendChild(btnMenos);
+    }
+
+    guardarVentasAgente();
+    guardarEquipos();
+    renderEquipos();
+    renderPanelAgentes();
+  }
+});
+
+body.appendChild(btnMenos);
+
 
     // EDITAR
     const btnEdit = document.createElement('button');
@@ -513,27 +713,71 @@ function renderEquipos() {
     listaEquipos.appendChild(card);
   });
 
-  // actualizar equipo top cada vez que se re-renderiza la lista
+  // actualizar equipo top global
   actualizarTopEquipo();
 }
 
-// pintar equipos al cargar
+// pintar equipos y panel de agentes al cargar
 renderEquipos();
+renderPanelAgentes();
 
 // ================== REGISTRO MANUAL DE CÓDIGO ==================
-const btnRegistrarManual = document.getElementById('btnRegistrarManual');
-const inputCodigoManual = document.getElementById('codigoManual');
+const inputCodigoManual   = document.getElementById('codigoManual');
+const btnRegistrarPublico = document.getElementById('btnRegistrarPublico');
+const btnRegistrarJugador = document.getElementById('btnRegistrarJugador');
+const btnRegistrarDirectiva = document.getElementById('btnRegistrarDirectiva');
 
-if (btnRegistrarManual && inputCodigoManual) {
-  btnRegistrarManual.addEventListener('click', () => {
-    const codigo = inputCodigoManual.value.trim();
-    if (!codigo) {
-      alert('Escribe o pega el código primero');
-      return;
-    }
-    // usa último equipo seleccionado si existe
-    sendToGoogleForm(codigo, ultimoEquipoSeleccionado);
-    alert('Código registrado correctamente.');
+function validarBaseManual() {
+  const codigo = inputCodigoManual.value.trim();
+  if (!codigo) {
+    alert('Escribe o pega el código / nombre primero');
+    return null;
+  }
+  if (!ultimoEquipoSeleccionado) {
+    alert('Primero selecciona un equipo y suma al menos 1 ticket con el botón +');
+    return null;
+  }
+  return codigo;
+}
+
+// Público (como antes)
+if (btnRegistrarPublico && inputCodigoManual) {
+  btnRegistrarPublico.addEventListener('click', () => {
+    const codigo = validarBaseManual();
+    if (!codigo) return;
+
+    sendToGoogleForm(codigo, ultimoEquipoSeleccionado, 'publico');
+    alert('Registro de PÚBLICO guardado correctamente.');
+    inputCodigoManual.value = '';
+  });
+}
+
+// Jugador
+if (btnRegistrarJugador && inputCodigoManual) {
+  btnRegistrarJugador.addEventListener('click', () => {
+    const codigo = validarBaseManual();
+    if (!codigo) return;
+
+    const nombreJugador = prompt('Nombre del JUGADOR (ej. Juan Pérez):', '');
+    if (!nombreJugador) return;
+
+    sendToGoogleForm(codigo, ultimoEquipoSeleccionado, 'jugador', nombreJugador);
+    alert('Registro de JUGADOR guardado correctamente.');
+    inputCodigoManual.value = '';
+  });
+}
+
+// Directiva
+if (btnRegistrarDirectiva && inputCodigoManual) {
+  btnRegistrarDirectiva.addEventListener('click', () => {
+    const codigo = validarBaseManual();
+    if (!codigo) return;
+
+    const nombreDirectiva = prompt('Nombre de la DIRECTIVA (ej. Presidente, delegado):', '');
+    if (!nombreDirectiva) return;
+
+    sendToGoogleForm(codigo, ultimoEquipoSeleccionado, 'directiva', nombreDirectiva);
+    alert('Registro de DIRECTIVA guardado correctamente.');
     inputCodigoManual.value = '';
   });
 }
@@ -572,3 +816,22 @@ btnDownloadJpg.addEventListener('click', () => {
     : 'qr';
   downloadCanvasImage(tipo, 'jpg');
 });
+
+// === ABRIR FORM DE GOOGLE CON DATOS DEL USUARIO ===
+function abrirFormEscaneo() {
+  const codigo = sessionStorage.getItem('codigo');   // AGE-01 / SUP-01 / CEO-01
+  const rango  = sessionStorage.getItem('usuario');  // Agente / Supervisor / CEO
+
+  if (!codigo || !rango) {
+    alert('Debes iniciar sesión para registrar en el formulario.');
+    return;
+  }
+
+  // URL base de tu formulario (sin parámetros)
+  const baseUrl = 'https://docs.google.com/forms/d/e/1FAIpQLSe_0E3-hsF4nbq0nArjQvuVe2ckG2xfz3pvU-v5z9edLAVbtA/viewform?usp=pp_url';
+
+  // entry.1375230144 -> USUARIO   |  entry.2139797690 -> RANGO_ENTRANTE
+  const url = `${baseUrl}&entry.1375230144=${encodeURIComponent(codigo)}&entry.2139797690=${encodeURIComponent(rango)}`;
+
+  window.open(url, '_blank');   // abre el Form en nueva pestaña
+}
