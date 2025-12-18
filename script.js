@@ -117,12 +117,14 @@ const btnDirectiva  = document.getElementById('btnDirectiva');
 const tituloResumen = document.querySelector('.side-panel h4');
 const panelAgentes  = document.getElementById('panelAgentes');
 
+const sidePanel = document.querySelector('.side-panel');
 if (!esCEO()) {
   // Si NO es CEO, ocultamos todo lo sensible
   if (btnJugadores)  btnJugadores.style.display  = 'none';
   if (btnDirectiva)  btnDirectiva.style.display  = 'none';
   if (tituloResumen) tituloResumen.style.display = 'none';
   if (panelAgentes)  panelAgentes.style.display  = 'none';
+  if (sidePanel)     sidePanel.style.display     = 'none';
 } else {
   // Si es CEO, activamos botones y mostramos todo
   if (btnJugadores) {
@@ -133,6 +135,19 @@ if (!esCEO()) {
       );
     });
   }
+// === FLECHA PARA OCULTAR / MOSTRAR PANEL LATERAL (SOLO CEO) ===
+const toggleSidePanelBtn = document.getElementById('toggleSidePanel');
+const sidePanel = document.querySelector('.side-panel');
+
+if (toggleSidePanelBtn && sidePanel && esCEO()) {
+  toggleSidePanelBtn.addEventListener('click', () => {
+    const colapsado = sidePanel.classList.toggle('collapsed');
+    toggleSidePanelBtn.textContent = colapsado ? '›' : '‹';
+  });
+} else if (sidePanel && !esCEO()) {
+  // Si no es CEO, ocultamos todo el panel
+  sidePanel.style.display = 'none';
+}
 
   if (btnDirectiva) {
     btnDirectiva.addEventListener('click', () => {
@@ -465,16 +480,21 @@ function renderPanelAgentes() {
 }
 
 
-// FECHA DE RESUMEN DE CUADRO QUE SOLO VE EL CEO // 
 const btnClearResumen = document.getElementById('btnClearResumen');
-if (btnClearResumen && esCEO()) {
-  btnClearResumen.addEventListener('click', () => {
-    if (!confirm('¿Borrar el resumen de agentes? Esto no borra los datos del Google Sheet.')) return;
-    Object.keys(ventasPorAgente).forEach(k => delete ventasPorAgente[k]);
-    guardarVentasAgente();
-    renderPanelAgentes();
-  });
+if (btnClearResumen) {
+  if (!esCEO()) {
+    // Ocultar botón para agentes y supervisores
+    btnClearResumen.style.display = 'none';
+  } else {
+    btnClearResumen.addEventListener('click', () => {
+      if (!confirm('¿Borrar el resumen de agentes? Esto no borra los datos del Google Sheet.')) return;
+      Object.keys(ventasPorAgente).forEach(k => delete ventasPorAgente[k]);
+      guardarVentasAgente();
+      renderPanelAgentes();
+    });
+  }
 }
+
 
 
 
@@ -687,30 +707,25 @@ body.appendChild(btnMenos);
     });
     body.appendChild(btnEdit);
 
-    // ELIMINAR
-    const btnDelete = document.createElement('button');
-    btnDelete.className = 'btn btn-red';
-    btnDelete.textContent = '✖';
-    btnDelete.addEventListener('click', () => {
-      // Solo CEO puede eliminar
-      const PASS_CEO = 'HALCO2025MARCOS'; // misma que login.js
-      if (!esCEO()) {
-        const pass = prompt('🔐 Solo el CEO puede eliminar equipos.\nContraseña de CEO:');
-        if (pass !== PASS_CEO) {
-          alert('Contraseña incorrecta. No se eliminó el equipo.');
-          return;
-        }
-      }
-      if (confirm(`¿Eliminar el equipo "${nombre}"?`)) {
-        delete equipos[nombre];
-        guardarEquipos();
-        renderEquipos();
-      }
-    });
-    body.appendChild(btnDelete);
+   // ELIMINAR (solo CEO ve el botón)
+if (esCEO()) {
+  const btnDelete = document.createElement('button');
+  btnDelete.className = 'btn btn-red';
+  btnDelete.textContent = '✖';
+  btnDelete.addEventListener('click', () => {
+    const PASS_CEO = 'HALCO2025MARCOS'; // misma que login.js
+    if (!confirm(`¿Eliminar el equipo "${nombre}"?`)) return;
 
-    card.appendChild(body);
-    listaEquipos.appendChild(card);
+    delete equipos[nombre];
+    guardarEquipos();
+    renderEquipos();
+  });
+  body.appendChild(btnDelete);
+}  // <- aquí cierra SOLO el if (esCEO())
+
+// Estas dos SIEMPRE van afuera del if
+card.appendChild(body);
+listaEquipos.appendChild(card);
   });
 
   // actualizar equipo top global
