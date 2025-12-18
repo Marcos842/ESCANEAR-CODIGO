@@ -18,13 +18,12 @@
     <!-- aquí tu tarjeta de login existente -->
   </div>
 
-
   <!-- aquí sigue tu contenedor de login existente -->
-
   <div class="login-box">
     
     <h2>🔒 Acceso al Sistema</h2>
 
+    <!-- Rango (lo de siempre) -->
     <select id="userRole">
       <option value="">👤 Selecciona tu rango</option>
       <option value="ceo">👑 CEO</option>
@@ -32,7 +31,15 @@
       <option value="agente">💼 Agente de Ventas</option>
     </select>
 
+    <!-- NUEVO: código + contraseña en la misma fila -->
     <div class="password-wrapper">
+      <!-- Select de código a la izquierda -->
+      <select id="codigoUsuario" class="codigo-select">
+  <option value="">Código</option>
+    </select>
+
+
+      <!-- Tu input de contraseña de siempre -->
       <input type="password" id="userPass" placeholder="🔑 Contraseña">
       <button type="button" id="togglePass" class="toggle-pass">👁️</button>
     </div>
