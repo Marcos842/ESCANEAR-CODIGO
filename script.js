@@ -401,13 +401,13 @@ if (btnClearQR && qrCanvas) {
 }
 
 // ================== CONTADOR DE EQUIPOS ==================
-const inputEquipo = document.getElementById('nuevoEquipo');
+const inputEquipo   = document.getElementById('nuevoEquipo');
 const btnAddEquipo = document.getElementById('btnAddEquipo');
-const listaEquipos = document.getElementById('listaEquipos');
+const listaEquipos  = document.getElementById('listaEquipos');
 
-// registro por agente (usar código único)
-const nombreAgente     = sessionStorage.getItem('codigo') || 'Sin código';
-const ventasPorAgente  = JSON.parse(localStorage.getItem('ventasPorAgente') || '{}');
+// registro por agente (sigue para totales de la vista, pero ya no se usa en panel global)
+const nombreAgente    = sessionStorage.getItem('codigo') || 'Sin código';
+const ventasPorAgente = JSON.parse(localStorage.getItem('ventasPorAgente') || '{}');
 
 function guardarVentasAgente() {
   localStorage.setItem('ventasPorAgente', JSON.stringify(ventasPorAgente));
@@ -459,25 +459,38 @@ function actualizarTopEquipo() {
   }
 }
 
-// panel lateral: resumen por agente (local)
-function renderPanelAgentes() {
+// panel lateral: resumen por agente (SOLO DATOS GLOBALES)
+function renderPanelAgentes(datosDesdeApi = null) {
   const panel = document.getElementById('panelAgentes');
   if (!panel) return;
 
   panel.innerHTML = '';
 
-  Object.keys(ventasPorAgente).forEach(nombre => {
-    const data = ventasPorAgente[nombre];
-    const div  = document.createElement('div');
+  if (!datosDesdeApi || !Array.isArray(datosDesdeApi) || datosDesdeApi.length === 0) {
+    const div = document.createElement('div');
+    div.style.marginBottom = '6px';
+    div.style.padding      = '4px 6px';
+    div.style.background   = '#ffffff';
+    div.style.borderRadius = '6px';
+    div.textContent = 'Sin datos globales todavía.';
+    panel.appendChild(div);
+    return;
+  }
+
+  datosDesdeApi.forEach(r => {
+    const div = document.createElement('div');
     div.style.marginBottom = '6px';
     div.style.padding      = '4px 6px';
     div.style.background   = '#ffffff';
     div.style.borderRadius = '6px';
 
-    const topEq = data.topEquipo || '—';
-    const fecha = data.fecha     || 'sin fecha';
+    const usuario   = r.usuario   || 'SIN_USUARIO';
+    const tickets   = r.tickets   || 0;
+    const monto     = r.monto     || 0;
+    const topEquipo = r.topEquipo || '—';
+    const fecha     = r.fecha     || '';
 
-    div.textContent = `${nombre}: ${data.tickets} tickets / S/ ${data.monto} / Top: ${topEq} / ${fecha}`;
+    div.textContent = `${usuario}: ${tickets} tickets / S/ ${monto} / Top: ${topEquipo} / ${fecha}`;
     panel.appendChild(div);
   });
 }
@@ -487,58 +500,29 @@ const API_RESUMEN_GLOBAL = 'https://script.google.com/macros/s/AKfycby5oD-aB0J7e
 
 // Cargar resumen global desde Google Sheets (solo CEO)
 async function cargarResumenGlobal() {
-  if (!esCEO()) {
-    // para agentes/supervisor, usa el resumen local
-    renderPanelAgentes();
-    return;
-  }
+  if (!esCEO()) return;
 
   try {
     const resp      = await fetch(API_RESUMEN_GLOBAL);
-    const registros = await resp.json();
+    const registros = await resp.json(); // [{usuario,tickets,monto,topEquipo,fecha}, ...]
 
-    const mapa = {}; // { usuario: { tickets, monto } }
-
-    registros.forEach(r => {
-      const agente = r.usuario || 'SIN_USUARIO';
-      if (!mapa[agente]) {
-        mapa[agente] = { tickets: 0, monto: 0 };
-      }
-      mapa[agente].tickets += 1;
-      mapa[agente].monto   += 3; // S/3 por ticket
-    });
-
-    const panel = document.getElementById('panelAgentes');
-    if (!panel) return;
-    panel.innerHTML = '';
-
-    Object.keys(mapa).forEach(nombre => {
-      const data = mapa[nombre];
-      const div  = document.createElement('div');
-      div.style.marginBottom = '6px';
-      div.style.padding      = '4px 6px';
-      div.style.background   = '#ffffff';
-      div.style.borderRadius = '6px';
-      div.textContent = `${nombre}: ${data.tickets} tickets / S/ ${data.monto}`;
-      panel.appendChild(div);
-    });
+    renderPanelAgentes(registros);
   } catch (err) {
     console.error('Error cargando resumen global', err);
-    renderPanelAgentes();
+    renderPanelAgentes([]);
   }
 }
 
-// Botón Limpiar resumen (solo borra localStorage)
+// Botón Limpiar resumen (solo borra localStorage del dispositivo, por si lo sigues usando)
 const btnClearResumen = document.getElementById('btnClearResumen');
 if (btnClearResumen) {
   if (!esCEO()) {
     btnClearResumen.style.display = 'none';
   } else {
     btnClearResumen.addEventListener('click', () => {
-      if (!confirm('¿Borrar el resumen de agentes? Esto no borra los datos del Google Sheet.')) return;
+      if (!confirm('¿Borrar el resumen local del dispositivo? Esto NO borra Google Sheet.')) return;
       Object.keys(ventasPorAgente).forEach(k => delete ventasPorAgente[k]);
       guardarVentasAgente();
-      renderPanelAgentes();
     });
   }
 }
@@ -654,7 +638,6 @@ function renderEquipos() {
       guardarVentasAgente();
       guardarEquipos();
       renderEquipos();
-      renderPanelAgentes();
     });
     body.appendChild(btnMas);
 
@@ -695,7 +678,6 @@ function renderEquipos() {
         guardarVentasAgente();
         guardarEquipos();
         renderEquipos();
-        renderPanelAgentes();
       }
     });
     body.appendChild(btnMenos);
@@ -770,12 +752,9 @@ function renderEquipos() {
 // pintar equipos al cargar
 renderEquipos();
 
-// Si es CEO: cargar siempre el resumen global desde Google Sheets;
-// agentes / supervisor ven solo su resumen local
+// Si es CEO: cargar siempre el resumen global desde Google Sheets
 if (esCEO()) {
   cargarResumenGlobal();
-} else {
-  renderPanelAgentes();
 }
 
 // ================== REGISTRO MANUAL DE CÓDIGO ==================
