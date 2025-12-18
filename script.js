@@ -5,7 +5,7 @@ function getRolActual() {
   return sessionStorage.getItem('rol') || null;
 }
 
-function esCEO() { return getRolActual() === 'ceo'; }
+function esCEO()        { return getRolActual() === 'ceo'; }
 function esSupervisor() { return getRolActual() === 'supervisor'; }
 
 // Mostrar barra de rol (debajo del h1 en HTML)
@@ -25,12 +25,12 @@ function mostrarRolActual(rol) {
 
 // Ajustar barra superior según sesión
 function actualizarBarraSesion() {
-  const rol = getRolActual();
-  const linkSesion = document.getElementById('linkSesion');
-  const linkInicio = document.getElementById('linkInicio');
+  const rol         = getRolActual();
+  const linkSesion  = document.getElementById('linkSesion');
+  const linkInicio  = document.getElementById('linkInicio');
   const linkSoporte = document.getElementById('linkSoporte');
 
-  if (!linkSesion) return; // por si se llama antes de cargar el DOM
+  if (!linkSesion) return;
 
   if (rol) {
     // Usuario dentro: mostrar Cerrar sesión
@@ -65,16 +65,17 @@ function actualizarBarraSesion() {
   }
 }
 
-const lblTiempo = document.getElementById('lblTiempoAgente'); // span en la top-bar
+// Tiempo activo en la barra superior
+const lblTiempo    = document.getElementById('lblTiempoAgente');
 const inicioSesion = Number(sessionStorage.getItem('inicioSesion') || 0);
 
 if (lblTiempo && inicioSesion) {
   const actualizarTiempo = () => {
-    const diffMs = Date.now() - inicioSesion;
+    const diffMs   = Date.now() - inicioSesion;
     const totalSeg = Math.floor(diffMs / 1000);
-    const horas = Math.floor(totalSeg / 3600);
-    const mins = Math.floor((totalSeg % 3600) / 60);
-    const segs = totalSeg % 60;
+    const horas    = Math.floor(totalSeg / 3600);
+    const mins     = Math.floor((totalSeg % 3600) / 60);
+    const segs     = totalSeg % 60;
 
     const hh = String(horas).padStart(2, '0');
     const mm = String(mins).padStart(2, '0');
@@ -83,16 +84,16 @@ if (lblTiempo && inicioSesion) {
     lblTiempo.textContent = `Tiempo activo: ${hh}:${mm}:${ss}`;
   };
 
-  actualizarTiempo();               // al entrar
-  setInterval(actualizarTiempo, 1000); // cada 1 segundo
+  actualizarTiempo();
+  setInterval(actualizarTiempo, 1000);
 }
 
 // ================== CONFIG GOOGLE FORM ==================
 const GOOGLE_FORM_ACTION =
   "https://docs.google.com/forms/d/e/1FAIpQLSe_0E3-hsF4nbq0nArjQvuVe2ckG2xfz3pvU-v5z9edLAVbtA/formResponse";
 
-const GOOGLE_ENTRY_CODE   = "entry.1389898450";        // Código escaneado
-const GOOGLE_ENTRY_EQUIPO = "entry.1581479368";        // Campo EQUIPO
+const GOOGLE_ENTRY_CODE   = "entry.1389898450"; // Código escaneado
+const GOOGLE_ENTRY_EQUIPO = "entry.1581479368"; // Campo EQUIPO
 
 // ================== VARIABLES ==================
 let scanner = null;
@@ -102,10 +103,10 @@ const beepAudio = document.getElementById('beepAudio');
 const resultDiv = document.getElementById('result');
 const codeDiv   = document.getElementById('code');
 
-const btnStart    = document.getElementById('btnStart');
-const btnStop     = document.getElementById('btnStop');
-const btnCopyCode = document.getElementById('btnCopyCode');
-const btnSendForm = document.getElementById('btnSendForm');
+const btnStart     = document.getElementById('btnStart');
+const btnStop      = document.getElementById('btnStop');
+const btnCopyCode  = document.getElementById('btnCopyCode');
+const btnSendForm  = document.getElementById('btnSendForm');
 
 const btnGenBarcode  = document.getElementById('btnGenBarcode');
 const btnGenQR       = document.getElementById('btnGenQR');
@@ -118,8 +119,7 @@ const btnDirectiva      = document.getElementById('btnDirectiva');
 const tituloResumen     = document.querySelector('.side-panel h4');
 const panelAgentes      = document.getElementById('panelAgentes');
 const btnResumenAgentes = document.getElementById('btnResumenAgentes');
-
-const sidePanel = document.querySelector('.side-panel');
+const sidePanel         = document.querySelector('.side-panel');
 
 // Ocultar panel completo si NO es CEO
 if (!esCEO()) {
@@ -227,16 +227,13 @@ function stopScan() {
 }
 
 // ENVIAR A GOOGLE FORM (público / jugador / directiva)
-const GOOGLEFORMACTION = 'https://docs.google.com/forms/d/e/1FAIpQLSe_0E3-hsF4nbq0nArjQvuVe2ckG2xfz3pvU-v5z9edLAVbtA/formResponse';
-
-const GOOGLEENTRYCODE      = 'entry.1389898450'; // Código escaneado
-const GOOGLEENTRYEQUIPO    = 'entry.1581479368'; // Equipo
-const GOOGLEENTRYJUGADOR   = 'entry.74934614';   // JUGADOR
-const GOOGLEENTRYDIRECTIVA = 'entry.822667573';  // DIRECTIVA
-
-// NUEVO: mismas entradas que usas en abrirFormEscaneo
-const GOOGLEENTRYUSUARIO = 'entry.1375230144';   // USUARIO (AGE-01, CEO-01)
-const GOOGLEENTRYRANGO   = 'entry.2139797690';   // RANGO_ENTRANTE (Agente, CEO)
+const GOOGLEFORMACTION      = 'https://docs.google.com/forms/d/e/1FAIpQLSe_0E3-hsF4nbq0nArjQvuVe2ckG2xfz3pvU-v5z9edLAVbtA/formResponse';
+const GOOGLEENTRYCODE       = 'entry.1389898450'; // Código escaneado
+const GOOGLEENTRYEQUIPO     = 'entry.1581479368'; // Equipo
+const GOOGLEENTRYJUGADOR    = 'entry.74934614';   // JUGADOR
+const GOOGLEENTRYDIRECTIVA  = 'entry.822667573';  // DIRECTIVA
+const GOOGLEENTRYUSUARIO    = 'entry.1375230144'; // USUARIO (AGE-01, CEO-01)
+const GOOGLEENTRYRANGO      = 'entry.2139797690'; // RANGO_ENTRANTE (Agente, CEO)
 
 function sendToGoogleForm(codigo, equipoSeleccionado, tipoRegistro = 'publico', nombrePersona = '') {
   if (!codigo) return;
@@ -248,18 +245,16 @@ function sendToGoogleForm(codigo, equipoSeleccionado, tipoRegistro = 'publico', 
     formData.append(GOOGLEENTRYEQUIPO, equipoSeleccionado);
   }
 
-
   // agregar datos del usuario que está logueado
-const codigoUsuario = sessionStorage.getItem('codigo') || '';
-const rangoUsuario  = sessionStorage.getItem('usuario') || '';
+  const codigoUsuario = sessionStorage.getItem('codigo') || '';
+  const rangoUsuario  = sessionStorage.getItem('usuario') || '';
 
-if (codigoUsuario) {
-  formData.append(GOOGLEENTRYUSUARIO, codigoUsuario);
-}
-if (rangoUsuario) {
-  formData.append(GOOGLEENTRYRANGO, rangoUsuario);
-}
-
+  if (codigoUsuario) {
+    formData.append(GOOGLEENTRYUSUARIO, codigoUsuario);
+  }
+  if (rangoUsuario) {
+    formData.append(GOOGLEENTRYRANGO, rangoUsuario);
+  }
 
   const nombreLimpio = (nombrePersona || '').trim();
 
@@ -332,9 +327,9 @@ function generateQR() {
   qr.addData(code);
   qr.make();
 
-  const modules = qr.getModuleCount();
+  const modules  = qr.getModuleCount();
   const cellSize = Math.floor(canvas.width / modules);
-  const margin = Math.floor((canvas.width - cellSize * modules) / 2);
+  const margin   = Math.floor((canvas.width - cellSize * modules) / 2);
 
   ctx.fillStyle = '#FFFFFF';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -364,11 +359,11 @@ function downloadCanvasImage(tipo = 'barras', format = 'png') {
     return alert('Primero genera el código ' + (tipo === 'qr' ? 'QR' : 'de barras'));
   }
 
-  const mime = format === 'jpg' ? 'image/jpeg' : 'image/png';
+  const mime    = format === 'jpg' ? 'image/jpeg' : 'image/png';
   const dataURL = canvas.toDataURL(mime);
 
   const a = document.createElement('a');
-  a.href = dataURL;
+  a.href     = dataURL;
   a.download = `codigo_${tipo}.${format}`;
   a.click();
 }
@@ -411,8 +406,8 @@ const btnAddEquipo = document.getElementById('btnAddEquipo');
 const listaEquipos = document.getElementById('listaEquipos');
 
 // registro por agente (usar código único)
-const nombreAgente = sessionStorage.getItem('codigo') || 'Sin código';
-const ventasPorAgente = JSON.parse(localStorage.getItem('ventasPorAgente') || '{}');
+const nombreAgente     = sessionStorage.getItem('codigo') || 'Sin código';
+const ventasPorAgente  = JSON.parse(localStorage.getItem('ventasPorAgente') || '{}');
 
 function guardarVentasAgente() {
   localStorage.setItem('ventasPorAgente', JSON.stringify(ventasPorAgente));
@@ -481,8 +476,8 @@ function renderPanelAgentes() {
 
     const topEq = data.topEquipo || '—';
     const fecha = data.fecha     || 'sin fecha';
-    div.textContent = `${nombre}: ${data.tickets} tickets / S/ ${data.monto} / Top: ${topEq} / ${fecha}`;
 
+    div.textContent = `${nombre}: ${data.tickets} tickets / S/ ${data.monto} / Top: ${topEq} / ${fecha}`;
     panel.appendChild(div);
   });
 }
@@ -533,8 +528,7 @@ async function cargarResumenGlobal() {
   }
 }
 
-
-// Botón Limpiar resumen (sigue usando el localStorage)
+// Botón Limpiar resumen (solo borra localStorage)
 const btnClearResumen = document.getElementById('btnClearResumen');
 if (btnClearResumen) {
   if (!esCEO()) {
@@ -615,7 +609,7 @@ function renderEquipos() {
     let ticketsEquipo = equipos[nombre];
     let montoEquipo   = ticketsEquipo * 3;
 
-    // guardamos en data- atributos para usar en "equipo top"
+    // guardar en data- atributos
     setDatosEquipo(card, ticketsEquipo, montoEquipo);
 
     // +
@@ -626,7 +620,6 @@ function renderEquipos() {
       equipos[nombre] += 1;
       ultimoEquipoSeleccionado = nombre;
 
-      // registrar en ventasPorAgente
       if (!ventasPorAgente[nombreAgente]) {
         ventasPorAgente[nombreAgente] = {
           tickets: 0,
@@ -639,17 +632,14 @@ function renderEquipos() {
 
       const dataAgente = ventasPorAgente[nombreAgente];
 
-      // totales generales del agente
       dataAgente.tickets += 1;
       dataAgente.monto   += 3;
 
-      // detalle por equipo para ese agente
       if (!dataAgente.equipos[nombre]) {
         dataAgente.equipos[nombre] = 0;
       }
       dataAgente.equipos[nombre] += 1;
 
-      // recalcular equipo TOP del agente
       let mejorEquipo = '—';
       let maxTickets  = -1;
       Object.keys(dataAgente.equipos).forEach(eq => {
@@ -777,15 +767,22 @@ function renderEquipos() {
   actualizarTopEquipo();
 }
 
-// pintar equipos y panel de agentes al cargar
+// pintar equipos al cargar
 renderEquipos();
-renderPanelAgentes();
+
+// Si es CEO: cargar siempre el resumen global desde Google Sheets;
+// agentes / supervisor ven solo su resumen local
+if (esCEO()) {
+  cargarResumenGlobal();
+} else {
+  renderPanelAgentes();
+}
 
 // ================== REGISTRO MANUAL DE CÓDIGO ==================
-const inputCodigoManual    = document.getElementById('codigoManual');
-const btnRegistrarPublico  = document.getElementById('btnRegistrarPublico');
-const btnRegistrarJugador  = document.getElementById('btnRegistrarJugador');
-const btnRegistrarDirectiva = document.getElementById('btnRegistrarDirectiva');
+const inputCodigoManual      = document.getElementById('codigoManual');
+const btnRegistrarPublico    = document.getElementById('btnRegistrarPublico');
+const btnRegistrarJugador    = document.getElementById('btnRegistrarJugador');
+const btnRegistrarDirectiva  = document.getElementById('btnRegistrarDirectiva');
 
 function validarBaseManual() {
   const codigo = inputCodigoManual.value.trim();
