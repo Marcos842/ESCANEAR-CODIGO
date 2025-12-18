@@ -73,15 +73,16 @@ body:not(.login-body) .resumen-circle {
 /* Botones */
 button {
   margin: 5px;
-  padding: 10px 18px;
+  padding: 10px 20px;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;      /* menos redondo = más serio */
   cursor: pointer;
   font-size: 14px;
+  font-weight: 600;        /* un poco más de peso */
 }
 
 .btn-green {
-  background: #28a745;
+  background: #2e7d32;     /* verde oscuro */
   color: #ffffff;
 }
 
@@ -91,13 +92,18 @@ button {
 }
 
 .btn-blue {
-  background: #007bff;
+  background: #1565c0;     /* azul medio */
   color: #ffffff;
-  padding: 8px 20px;
-  border-radius: 999px;
-  cursor: pointer;
-  font-size: 14px;
 }
+.btn-yellow {
+  background: #f9a825;     /* ámbar */
+  color: #212121;
+}
+
+/* Efecto hover más profesional */
+.btn-green:hover  { background: #1b5e20; }
+.btn-blue:hover   { background: #0d47a1; }
+.btn-yellow:hover { background: #f57f17; }
 
 /* Botones icono (+, -, editar, eliminar) */
 .btn-icon {
@@ -174,7 +180,7 @@ input[type="text"] {
 /* Sección crear código (oculta por defecto) */
 .crear-codigo-contenedor {
   display: none;
-  margin-top: 20px;
+  margin-top: 40px;
 }
 
 /* Botones de la lista de equipos */
@@ -243,10 +249,23 @@ input[type="text"] {
 .equipo-card {
   background: #ffffff;
   border-radius: 10px;
-  box-shadow: 0 2px 6px rgba(0,0,0,.08);
-  padding: 10px 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+  padding: 12px 14px;
+  border: 1px solid #e0e0e0;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+/* Efecto al pasar el mouse */
+.equipo-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.18);
 }
 
+body.dark-mode .equipo-card {
+  background: #1f1f1f;
+  border-color: #333;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.6);
+}
+f
 /* NOMBRE DEL EQUIPO ARRIBA */
 .equipo-card-header {
   font-weight: 700;
@@ -372,29 +391,33 @@ input[type="text"] {
 }
 
 .password-wrapper {
-  position: relative;
+  position: relative;      /* NUEVO */
+  display: flex;
+  align-items: center;
 }
 
-/* Espacio a la derecha para icono + X */
-.password-wrapper input {
-  width: 100%;
-  padding-right: 56px;
-  box-sizing: border-box;
+.codigo-select {
+  min-width: 110px;
 }
+
+.password-wrapper select,
+.password-wrapper input {
+  height: 100%;
+}
+
 
 /* Botón ojo a la derecha */
 .toggle-pass {
   position: absolute;
   top: 50%;
-  right: 10px;
+  right: 2px;             /* prueba con 15px; si sigue lejos, baja a 5px */
   transform: translateY(-50%);
   border: none;
   background: transparent;
   cursor: pointer;
   font-size: 16px;
-  line-height: 1;
-  width: 28px;              /* tamaño fijo */
-  height: 28px;             /* tamaño fijo */
+  width: 28px;
+  height: 28px;
   padding: 0;
 }
 
@@ -562,4 +585,82 @@ body.login-body.dark-mode .login-box {
 
 body.login-body.dark-mode .login-box h2 {
   color: #90caf9;
+}
+.side-panel {
+  position: fixed;
+  right: 10px;          /* cambia a left:10px; si lo quieres a la izquierda */
+  top: 80px;
+  width: 220px;
+  background: rgba(0,0,0,0.05);
+  padding: 10px;
+  border-radius: 10px;
+  font-size: 13px;
+  z-index: 1500;
+}
+
+.side-btn {
+  width: 100%;
+  margin-bottom: 6px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  background: #ffffff;
+}
+.manual-inner {
+  text-align: center;
+}
+
+.manual-inner input[type="text"] {
+  width: 80%;
+  max-width: 400px;
+}
+
+.manual-inner button {
+  display: inline-block;
+}
+.manual-box {
+  margin-top: 10px;
+  margin-bottom: 40px;  /* súbelo a 60 si aún lo ves muy junto */
+}
+
+
+/* MODO OSCURO */
+
+/* Panel lateral en modo oscuro (lo dejas igual o muy parecido) */
+body.dark-mode .side-panel {
+  background-color: #181818;
+}
+
+/* SOLO color del texto dentro del resumen por agente */
+body.dark-mode #panelAgentes {
+  color: #000000;   /* texto negro para fondo blanco */
+}
+
+/* Título del panel en modo oscuro */
+body.dark-mode .side-panel h4 {
+  color: #ffffff;
+}
+/* Caja del resumen por agente (panel lateral) */
+.side-panel {
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.18);
+}
+
+/* Cada fila de agente como tarjeta pequeña */
+#panelAgentes > div {
+  margin-bottom: 6px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+}
+
+/* Modo oscuro: mismo diseño pero oscuro */
+body.dark-mode .side-panel {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.9);
+}
+
+body.dark-mode #panelAgentes > div {
+  border-color: #333;
 }
