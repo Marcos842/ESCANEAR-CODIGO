@@ -234,6 +234,10 @@ const GOOGLEENTRYEQUIPO    = 'entry.1581479368'; // Equipo
 const GOOGLEENTRYJUGADOR   = 'entry.74934614';   // JUGADOR
 const GOOGLEENTRYDIRECTIVA = 'entry.822667573';  // DIRECTIVA
 
+// NUEVO: mismas entradas que usas en abrirFormEscaneo
+const GOOGLEENTRYUSUARIO = 'entry.1375230144';   // USUARIO (AGE-01, CEO-01)
+const GOOGLEENTRYRANGO   = 'entry.2139797690';   // RANGO_ENTRANTE (Agente, CEO)
+
 function sendToGoogleForm(codigo, equipoSeleccionado, tipoRegistro = 'publico', nombrePersona = '') {
   if (!codigo) return;
 
@@ -243,6 +247,19 @@ function sendToGoogleForm(codigo, equipoSeleccionado, tipoRegistro = 'publico', 
   if (equipoSeleccionado) {
     formData.append(GOOGLEENTRYEQUIPO, equipoSeleccionado);
   }
+
+
+  // agregar datos del usuario que está logueado
+const codigoUsuario = sessionStorage.getItem('codigo') || '';
+const rangoUsuario  = sessionStorage.getItem('usuario') || '';
+
+if (codigoUsuario) {
+  formData.append(GOOGLEENTRYUSUARIO, codigoUsuario);
+}
+if (rangoUsuario) {
+  formData.append(GOOGLEENTRYRANGO, rangoUsuario);
+}
+
 
   const nombreLimpio = (nombrePersona || '').trim();
 
