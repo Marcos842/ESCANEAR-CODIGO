@@ -12,7 +12,7 @@ body {
   margin: 0;
 }
 
-/* Modo oscuro GLOBAL (se activa con body.dark-mode) */
+/* ===== MODO OSCURO GLOBAL ===== */
 body.dark-mode {
   --bg-color: #121212;
   --text-color: #f5f5f5;
@@ -33,28 +33,29 @@ body.dark-mode .btn-theme-toggle {
   color: #ffeb3b;
 }
 
-/* Contenedores principales que usan tarjeta */
+/* Contenedores principales tipo tarjeta */
 .container,
 .login-box,
 .support-box {
   background-color: var(--card-bg);
 }
 
-/* ================== ESTILOS GENERALES ESCÁNER ================== */
 
+/* ================== ESTILOS GENERALES ESCÁNER ================== */
 h1 {
   text-align: center;
   margin: 20px 0;
 }
 
-/* Contenedores */
+/* Contenedor principal de la página de escáner */
 .container {
   max-width: 900px;
   margin: 0 auto 40px;
   padding: 20px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
-/* Texto principal en página de escáner */
+
+/* Colores de texto en páginas internas (no login) */
 body:not(.login-body) {
   color: var(--text-color);
 }
@@ -70,19 +71,20 @@ body:not(.login-body) .resumen-circle {
   text-align: center;
 }
 
-/* Botones */
+
+/* ===== BOTONES GENERALES ===== */
 button {
   margin: 5px;
   padding: 10px 20px;
   border: none;
-  border-radius: 6px;      /* menos redondo = más serio */
+  border-radius: 6px;
   cursor: pointer;
   font-size: 14px;
-  font-weight: 600;        /* un poco más de peso */
+  font-weight: 600;
 }
 
 .btn-green {
-  background: #2e7d32;     /* verde oscuro */
+  background: #2e7d32;
   color: #ffffff;
 }
 
@@ -92,20 +94,21 @@ button {
 }
 
 .btn-blue {
-  background: #1565c0;     /* azul medio */
+  background: #1565c0;
   color: #ffffff;
 }
+
 .btn-yellow {
-  background: #f9a825;     /* ámbar */
+  background: #f9a825;
   color: #212121;
 }
 
-/* Efecto hover más profesional */
+/* Hover de botones principales */
 .btn-green:hover  { background: #1b5e20; }
 .btn-blue:hover   { background: #0d47a1; }
 .btn-yellow:hover { background: #f57f17; }
 
-/* Botones icono (+, -, editar, eliminar) */
+/* Botones icono (+, -, Editar, Eliminar) */
 .btn-icon {
   min-width: 36px;
   height: 32px;
@@ -139,7 +142,8 @@ button {
   color: #fff;
 }
 
-/* Input */
+
+/* ===== INPUTS Y LECTOR ===== */
 input[type="text"] {
   width: 80%;
   max-width: 320px;
@@ -147,7 +151,6 @@ input[type="text"] {
   margin-top: 10px;
 }
 
-/* Lector */
 .reader-box {
   width: 100%;
   max-width: 380px;
@@ -165,13 +168,13 @@ input[type="text"] {
   font-weight: bold;
 }
 
-/* Canvases */
+/* Canvases de códigos */
 .canvas-box canvas {
   border: 1px solid #ccc;
   margin: 10px;
 }
 
-/* Ocultar por defecto, JS los muestra cuando se generan */
+/* Ocultos por defecto, JS los muestra cuando se generan */
 #barcodeCanvas,
 #qrCanvas {
   display: none;
@@ -183,12 +186,13 @@ input[type="text"] {
   margin-top: 40px;
 }
 
-/* Botones de la lista de equipos */
+/* Botones dentro de la lista de equipos (no forzar ancho) */
 #listaEquipos button {
   min-width: auto;
 }
 
-/* Resumen circular tickets / monto */
+
+/* ================== RESUMEN CIRCULAR (TICKETS / MONTO) ================== */
 .resumen-circular {
   text-align: center;
   margin: 20px 0;
@@ -214,7 +218,8 @@ input[type="text"] {
   margin: 2px 0;
 }
 
-/* Responsive sencillo */
+
+/* ================== RESPONSIVE GENERAL (MÓVIL) ================== */
 @media (max-width: 600px) {
   .container {
     margin: 0 5px 30px;
@@ -238,14 +243,16 @@ input[type="text"] {
   }
 }
 
-/* CONTENEDOR DE TARJETAS DE EQUIPOS */
+
+/* ================== TARJETAS DE EQUIPOS ================== */
+/* Contenedor de tarjetas de equipos */
 #listaEquipos {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 12px;
 }
 
-/* UNA TARJETA POR EQUIPO */
+/* Card de cada equipo */
 .equipo-card {
   background: #ffffff;
   border-radius: 10px;
@@ -254,25 +261,27 @@ input[type="text"] {
   border: 1px solid #e0e0e0;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
-/* Efecto al pasar el mouse */
+
+/* Hover en card de equipo */
 .equipo-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 14px rgba(0,0,0,0.18);
 }
 
+/* Card de equipo en modo oscuro */
 body.dark-mode .equipo-card {
   background: #1f1f1f;
   border-color: #333;
   box-shadow: 0 4px 10px rgba(0,0,0,0.6);
 }
-f
-/* NOMBRE DEL EQUIPO ARRIBA */
+
+/* Título del equipo */
 .equipo-card-header {
   font-weight: 700;
   margin-bottom: 6px;
 }
 
-/* CUERPO: CONTADOR + BOTONES */
+/* Cuerpo de la card: contador + botones */
 .equipo-card-body {
   display: grid;
   grid-template-columns: 1fr 0.6fr 0.6fr 0.9fr 0.5fr;
@@ -289,7 +298,7 @@ f
   font-size: 13px;
 }
 
-/* AJUSTE RESPONSIVE PARA CELULAR */
+/* Ajuste responsive de cards de equipo (móvil) */
 @media (max-width: 600px) {
   #listaEquipos {
     grid-template-columns: 1fr;
@@ -305,8 +314,8 @@ f
   }
 }
 
-/* ================== ESTILOS LOGIN ================== */
 
+/* ================== ESTILOS LOGIN ================== */
 .login-body {
   background: linear-gradient(135deg, #1976d2, #42a5f5);
   min-height: 100vh;
@@ -315,7 +324,7 @@ f
   justify-content: center;
 }
 
-/* Tarjeta de login SIEMPRE clara y texto oscuro (modo claro) */
+/* Tarjeta de login (modo claro) */
 .login-box {
   background: #ffffff;
   padding: 40px;
@@ -390,8 +399,9 @@ f
   color: #000000;
 }
 
+/* Wrapper para select de código + input contraseña */
 .password-wrapper {
-  position: relative;      /* NUEVO */
+  position: relative;
   display: flex;
   align-items: center;
 }
@@ -405,12 +415,11 @@ f
   height: 100%;
 }
 
-
-/* Botón ojo a la derecha */
+/* Botón ojo para mostrar/ocultar contraseña */
 .toggle-pass {
   position: absolute;
   top: 50%;
-  right: 2px;             /* prueba con 15px; si sigue lejos, baja a 5px */
+  right: 2px;
   transform: translateY(-50%);
   border: none;
   background: transparent;
@@ -422,8 +431,7 @@ f
 }
 
 
-
-/* Barra superior (páginas internas) */
+/* ================== BARRA SUPERIOR (PÁGINAS INTERNAS) ================== */
 .top-bar {
   position: sticky;
   top: 0;
@@ -452,6 +460,7 @@ f
   color: #1976d2;
 }
 
+/* Barra superior en móvil: en columna */
 @media (max-width: 600px) {
   .top-bar {
     flex-direction: column;
@@ -460,8 +469,8 @@ f
   }
 }
 
-/* ================== SOPORTE ================== */
 
+/* ================== SOPORTE ================== */
 .support-box {
   padding: 30px;
   border-radius: 20px;
@@ -533,7 +542,8 @@ f
   margin-top: 10px;
 }
 
-/* Botón modo oscuro */
+
+/* ================== BOTÓN MODO OSCURO ================== */
 .btn-theme-toggle {
   margin-left: 10px;
   border: none;
@@ -573,7 +583,7 @@ f
   background: rgba(0,0,0,0.9);
 }
 
-/* Modo oscuro específico para la pantalla de login */
+/* Modo oscuro específico para login */
 body.login-body.dark-mode {
   background: #121212;
 }
@@ -586,18 +596,25 @@ body.login-body.dark-mode .login-box {
 body.login-body.dark-mode .login-box h2 {
   color: #90caf9;
 }
+
+
+/* ================== PANEL LATERAL (CEO) ================== */
+/* Caja general del panel lateral */
 .side-panel {
   position: fixed;
-  right: 10px;          /* cambia a left:10px; si lo quieres a la izquierda */
-  top: 80px;
-  width: 220px;
-  background: rgba(0,0,0,0.05);
+  right: 10px;
+  top: 90px;
+  width: 260px;
   padding: 10px;
-  border-radius: 10px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.18);
+  background: rgba(0,0,0,0.05);
   font-size: 13px;
   z-index: 1500;
+  transition: transform 0.2s ease, opacity 0.2s ease;
 }
 
+/* Botones de arriba del panel lateral */
 .side-btn {
   width: 100%;
   margin-bottom: 6px;
@@ -608,47 +625,8 @@ body.login-body.dark-mode .login-box h2 {
   font-size: 13px;
   background: #ffffff;
 }
-.manual-inner {
-  text-align: center;
-}
 
-.manual-inner input[type="text"] {
-  width: 80%;
-  max-width: 400px;
-}
-
-.manual-inner button {
-  display: inline-block;
-}
-.manual-box {
-  margin-top: 10px;
-  margin-bottom: 40px;  /* súbelo a 60 si aún lo ves muy junto */
-}
-
-
-/* MODO OSCURO */
-
-/* Panel lateral en modo oscuro (lo dejas igual o muy parecido) */
-body.dark-mode .side-panel {
-  background-color: #181818;
-}
-
-/* SOLO color del texto dentro del resumen por agente */
-body.dark-mode #panelAgentes {
-  color: #000000;   /* texto negro para fondo blanco */
-}
-
-/* Título del panel en modo oscuro */
-body.dark-mode .side-panel h4 {
-  color: #ffffff;
-}
-/* Caja del resumen por agente (panel lateral) */
-.side-panel {
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.18);
-}
-
-/* Cada fila de agente como tarjeta pequeña */
+/* Cada fila del resumen por agente */
 #panelAgentes > div {
   margin-bottom: 6px;
   padding: 6px 8px;
@@ -656,8 +634,9 @@ body.dark-mode .side-panel h4 {
   border: 1px solid #e0e0e0;
 }
 
-/* Modo oscuro: mismo diseño pero oscuro */
+/* Modo oscuro del panel lateral */
 body.dark-mode .side-panel {
+  background-color: #181818;
   box-shadow: 0 4px 12px rgba(0,0,0,0.9);
 }
 
@@ -665,25 +644,26 @@ body.dark-mode #panelAgentes > div {
   border-color: #333;
 }
 
-
-
-.side-panel {
-  position: fixed;
-  right: 10px;
-  top: 90px;
-  width: 260px;
-  transition: transform 0.2s ease, opacity 0.2s ease;
+/* Título del panel en modo oscuro */
+body.dark-mode .side-panel h4 {
+  color: #ffffff;
 }
 
-/* Botón flecha lateral */
+/* Color del texto dentro del resumen por agente en modo oscuro */
+body.dark-mode #panelAgentes {
+  color: #000000; /* texto negro sobre tarjeta blanca */
+}
+
+
+/* ===== Botón flecha para ocultar/mostrar panel ===== */
 .side-panel-toggle {
   position: absolute;
-  left: -40px;          /* sobresale un poco del panel */
-  top: 50%;             /* centro vertical */
+  left: -40px;
+  top: 50%;
   transform: translateY(-50%);
   width: 26px;
   height: 40px;
-  border-radius: 20px 0 0 20px;  /* medio óvalo pegado al panel */
+  border-radius: 20px 0 0 20px;
   border: none;
   background: #424242;
   color: #ffffff;
@@ -695,23 +675,47 @@ body.dark-mode #panelAgentes > div {
   box-shadow: 0 2px 6px rgba(0,0,0,0.4);
 }
 
-/* Panel colapsado: se desplaza a la derecha casi todo su ancho */
+/* Panel colapsado (se mueve hacia la derecha) */
 .side-panel.collapsed {
   transform: translateX(230px);
   opacity: 0.4;
 }
 
-/* En colapsado la flecha queda pegada al borde de la pantalla */
+/* Flecha cuando panel está colapsado */
 .side-panel.collapsed .side-panel-toggle {
   left: -26px;
 }
 
-/* Ajuste en móviles: mismo diseño, solo posiciones */
+/* Ajuste en móviles SOLO para el panel lateral */
 @media (max-width: 600px) {
   .side-panel {
     right: 0;
     width: 260px;
   }
 }
+/* Bloque de input + botones centrado */
+.bloque-guardar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;   /* centra todo en horizontal */
+  gap: 8px;
+}
 
+/* En móvil, que se vea en columna pero igual centrado */
+@media (max-width: 600px) {
+  .bloque-guardar {
+    flex-direction: column;
+    align-items: center;
+  }
 
+  .bloque-guardar input[type="text"] {
+    width: 90%;
+    max-width: 320px;
+  }
+
+  .bloque-guardar button {
+    width: 90%;
+    max-width: 260px;
+  }
+}
