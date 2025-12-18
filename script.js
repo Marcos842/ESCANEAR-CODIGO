@@ -493,6 +493,7 @@ const API_RESUMEN_GLOBAL = 'https://script.google.com/macros/s/AKfycby5oD-aB0J7e
 // Cargar resumen global desde Google Sheets (solo CEO)
 async function cargarResumenGlobal() {
   if (!esCEO()) {
+    // para agentes/supervisor, usa el resumen local
     renderPanelAgentes();
     return;
   }
@@ -501,11 +502,10 @@ async function cargarResumenGlobal() {
     const resp      = await fetch(API_RESUMEN_GLOBAL);
     const registros = await resp.json();
 
-    // Agrupar por USUARIO (código de agente)
-    const mapa = {}; // { agente: { tickets, monto } }
+    const mapa = {}; // { usuario: { tickets, monto } }
 
     registros.forEach(r => {
-      const agente = r.usuario || r.agente || 'SIN_USUARIO';
+      const agente = r.usuario || 'SIN_USUARIO';
       if (!mapa[agente]) {
         mapa[agente] = { tickets: 0, monto: 0 };
       }
@@ -532,6 +532,7 @@ async function cargarResumenGlobal() {
     renderPanelAgentes();
   }
 }
+
 
 // Botón Limpiar resumen (sigue usando el localStorage)
 const btnClearResumen = document.getElementById('btnClearResumen');
