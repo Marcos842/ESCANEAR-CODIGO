@@ -47,6 +47,7 @@ function actualizarBarraSesion() {
     linkSesion.href = 'login.html';
     linkSesion.onclick = null;
   }
+
   // Inicio siempre lleva a index.html
   if (linkInicio) {
     linkInicio.href = 'index.html';
@@ -90,8 +91,8 @@ if (lblTiempo && inicioSesion) {
 const GOOGLE_FORM_ACTION =
   "https://docs.google.com/forms/d/e/1FAIpQLSe_0E3-hsF4nbq0nArjQvuVe2ckG2xfz3pvU-v5z9edLAVbtA/formResponse";
 
-const GOOGLE_ENTRY_CODE = "entry.1389898450";        // Código escaneado
-const GOOGLE_ENTRY_EQUIPO = "entry.1581479368";      // Campo EQUIPO
+const GOOGLE_ENTRY_CODE   = "entry.1389898450";        // Código escaneado
+const GOOGLE_ENTRY_EQUIPO = "entry.1581479368";        // Campo EQUIPO
 
 // ================== VARIABLES ==================
 let scanner = null;
@@ -99,34 +100,36 @@ let scanner = null;
 const beepAudio = document.getElementById('beepAudio');
 
 const resultDiv = document.getElementById('result');
-const codeDiv = document.getElementById('code');
+const codeDiv   = document.getElementById('code');
 
-const btnStart = document.getElementById('btnStart');
-const btnStop = document.getElementById('btnStop');
+const btnStart    = document.getElementById('btnStart');
+const btnStop     = document.getElementById('btnStop');
 const btnCopyCode = document.getElementById('btnCopyCode');
 const btnSendForm = document.getElementById('btnSendForm');
 
-const btnGenBarcode = document.getElementById('btnGenBarcode');
-const btnGenQR = document.getElementById('btnGenQR');
+const btnGenBarcode  = document.getElementById('btnGenBarcode');
+const btnGenQR       = document.getElementById('btnGenQR');
 const btnDownloadPng = document.getElementById('btnDownloadPng');
 const btnDownloadJpg = document.getElementById('btnDownloadJpg');
 
 // === BOTONES PANEL LATERAL Y RESUMEN (SOLO CEO) ===
-const btnJugadores  = document.getElementById('btnJugadores');
-const btnDirectiva  = document.getElementById('btnDirectiva');
-const tituloResumen = document.querySelector('.side-panel h4');
-const panelAgentes  = document.getElementById('panelAgentes');
+const btnJugadores      = document.getElementById('btnJugadores');
+const btnDirectiva      = document.getElementById('btnDirectiva');
+const tituloResumen     = document.querySelector('.side-panel h4');
+const panelAgentes      = document.getElementById('panelAgentes');
+const btnResumenAgentes = document.getElementById('btnResumenAgentes');
 
 const sidePanel = document.querySelector('.side-panel');
+
+// Ocultar panel completo si NO es CEO
 if (!esCEO()) {
-  // Si NO es CEO, ocultamos todo lo sensible
   if (btnJugadores)  btnJugadores.style.display  = 'none';
   if (btnDirectiva)  btnDirectiva.style.display  = 'none';
   if (tituloResumen) tituloResumen.style.display = 'none';
   if (panelAgentes)  panelAgentes.style.display  = 'none';
   if (sidePanel)     sidePanel.style.display     = 'none';
 } else {
-  // Si es CEO, activamos botones y mostramos todo
+  // Si es CEO, activar botones
   if (btnJugadores) {
     btnJugadores.addEventListener('click', () => {
       window.open(
@@ -135,19 +138,6 @@ if (!esCEO()) {
       );
     });
   }
-// === FLECHA PARA OCULTAR / MOSTRAR PANEL LATERAL (SOLO CEO) ===
-const toggleSidePanelBtn = document.getElementById('toggleSidePanel');
-const sidePanel = document.querySelector('.side-panel');
-
-if (toggleSidePanelBtn && sidePanel && esCEO()) {
-  toggleSidePanelBtn.addEventListener('click', () => {
-    const colapsado = sidePanel.classList.toggle('collapsed');
-    toggleSidePanelBtn.textContent = colapsado ? '›' : '‹';
-  });
-} else if (sidePanel && !esCEO()) {
-  // Si no es CEO, ocultamos todo el panel
-  sidePanel.style.display = 'none';
-}
 
   if (btnDirectiva) {
     btnDirectiva.addEventListener('click', () => {
@@ -162,6 +152,17 @@ if (toggleSidePanelBtn && sidePanel && esCEO()) {
   if (panelAgentes)  panelAgentes.style.display  = '';
 }
 
+// === FLECHA PARA OCULTAR / MOSTRAR PANEL LATERAL (SOLO CEO) ===
+const toggleSidePanelBtn = document.getElementById('toggleSidePanel');
+
+if (toggleSidePanelBtn && sidePanel && esCEO()) {
+  toggleSidePanelBtn.addEventListener('click', () => {
+    const colapsado = sidePanel.classList.toggle('collapsed');
+    toggleSidePanelBtn.textContent = colapsado ? '›' : '‹';
+  });
+} else if (sidePanel && !esCEO()) {
+  sidePanel.style.display = 'none';
+}
 
 // ================== SONIDO ==================
 function playBeep() {
@@ -205,9 +206,7 @@ async function startScan() {
         resultDiv.style.display = 'block';
         stopScan();
       },
-      () => {
-        // errores por frame, ignorar
-      }
+      () => { /* errores por frame, ignorar */ }
     );
   } catch (err) {
     alert("Error cámara: " + err);
@@ -230,17 +229,11 @@ function stopScan() {
 // ENVIAR A GOOGLE FORM (público / jugador / directiva)
 const GOOGLEFORMACTION = 'https://docs.google.com/forms/d/e/1FAIpQLSe_0E3-hsF4nbq0nArjQvuVe2ckG2xfz3pvU-v5z9edLAVbtA/formResponse';
 
-const GOOGLEENTRYCODE     = 'entry.1389898450'; // Código escaneado
-const GOOGLEENTRYEQUIPO   = 'entry.1581479368'; // Equipo
-const GOOGLEENTRYJUGADOR  = 'entry.74934614';   // JUGADOR
-const GOOGLEENTRYDIRECTIVA = 'entry.822667573'; // DIRECTIVA
+const GOOGLEENTRYCODE      = 'entry.1389898450'; // Código escaneado
+const GOOGLEENTRYEQUIPO    = 'entry.1581479368'; // Equipo
+const GOOGLEENTRYJUGADOR   = 'entry.74934614';   // JUGADOR
+const GOOGLEENTRYDIRECTIVA = 'entry.822667573';  // DIRECTIVA
 
-/**
- * tipoRegistro:
- *  - 'publico'   -> solo código + equipo (como antes)
- *  - 'jugador'   -> llena campo JUGADOR
- *  - 'directiva' -> llena campo DIRECTIVA
- */
 function sendToGoogleForm(codigo, equipoSeleccionado, tipoRegistro = 'publico', nombrePersona = '') {
   if (!codigo) return;
 
@@ -251,7 +244,6 @@ function sendToGoogleForm(codigo, equipoSeleccionado, tipoRegistro = 'publico', 
     formData.append(GOOGLEENTRYEQUIPO, equipoSeleccionado);
   }
 
-  // Limpiamos el texto por si acaso
   const nombreLimpio = (nombrePersona || '').trim();
 
   if (tipoRegistro === 'jugador' && nombreLimpio) {
@@ -376,9 +368,9 @@ function toggleCrearCodigo() {
 
 // ================== ELIMINAR CÓDIGOS (CANVAS) ==================
 const btnClearBarcode = document.getElementById('btnClearBarcode');
-const btnClearQR = document.getElementById('btnClearQR');
-const barcodeCanvas = document.getElementById('barcodeCanvas');
-const qrCanvas = document.getElementById('qrCanvas');
+const btnClearQR      = document.getElementById('btnClearQR');
+const barcodeCanvas   = document.getElementById('barcodeCanvas');
+const qrCanvas        = document.getElementById('qrCanvas');
 
 if (btnClearBarcode && barcodeCanvas) {
   const barcodeCtx = barcodeCanvas.getContext('2d');
@@ -425,22 +417,22 @@ function guardarEquipos() {
 // helper para guardar tickets/monto en cada card
 function setDatosEquipo(card, tickets, monto) {
   card.dataset.tickets = tickets;
-  card.dataset.monto = monto;
+  card.dataset.monto   = monto;
 }
 
 // calcula equipo top global (entre todos los equipos)
 function actualizarTopEquipo() {
   let topNombre = '—';
-  let topMonto = -1;
+  let topMonto  = -1;
 
   document.querySelectorAll('.equipo-card').forEach(card => {
     const header = card.querySelector('.equipo-card-header');
     if (!header) return;
     const nombre = header.textContent.trim();
-    const monto = Number(card.dataset.monto || 0);
+    const monto  = Number(card.dataset.monto || 0);
 
     if (monto > topMonto) {
-      topMonto = monto;
+      topMonto  = monto;
       topNombre = nombre;
     }
   });
@@ -455,7 +447,7 @@ function actualizarTopEquipo() {
   }
 }
 
-// panel lateral: resumen por agente
+// panel lateral: resumen por agente (local)
 function renderPanelAgentes() {
   const panel = document.getElementById('panelAgentes');
   if (!panel) return;
@@ -464,26 +456,70 @@ function renderPanelAgentes() {
 
   Object.keys(ventasPorAgente).forEach(nombre => {
     const data = ventasPorAgente[nombre];
-    const div = document.createElement('div');
+    const div  = document.createElement('div');
     div.style.marginBottom = '6px';
-    div.style.padding = '4px 6px';
-    div.style.background = '#ffffff';
+    div.style.padding      = '4px 6px';
+    div.style.background   = '#ffffff';
     div.style.borderRadius = '6px';
 
     const topEq = data.topEquipo || '—';
-    const fecha = data.fecha || 'sin fecha';
+    const fecha = data.fecha     || 'sin fecha';
     div.textContent = `${nombre}: ${data.tickets} tickets / S/ ${data.monto} / Top: ${topEq} / ${fecha}`;
 
-    // ESTA LÍNEA FALTABA
     panel.appendChild(div);
   });
 }
 
+// === URL de la API global (CEO ve todo)
+const API_RESUMEN_GLOBAL = 'https://script.google.com/macros/s/AKfycby5oD-aB0J7e--ql1EwmdOLYUhHdUBlOGY71TuQbB5pHpqjAvSCIp4WSsLqKnawWVuM/exec';
 
+// Cargar resumen global desde Google Sheets (solo CEO)
+async function cargarResumenGlobal() {
+  if (!esCEO()) {
+    renderPanelAgentes();
+    return;
+  }
+
+  try {
+    const resp      = await fetch(API_RESUMEN_GLOBAL);
+    const registros = await resp.json();
+
+    // Agrupar por USUARIO (código de agente)
+    const mapa = {}; // { agente: { tickets, monto } }
+
+    registros.forEach(r => {
+      const agente = r.usuario || r.agente || 'SIN_USUARIO';
+      if (!mapa[agente]) {
+        mapa[agente] = { tickets: 0, monto: 0 };
+      }
+      mapa[agente].tickets += 1;
+      mapa[agente].monto   += 3; // S/3 por ticket
+    });
+
+    const panel = document.getElementById('panelAgentes');
+    if (!panel) return;
+    panel.innerHTML = '';
+
+    Object.keys(mapa).forEach(nombre => {
+      const data = mapa[nombre];
+      const div  = document.createElement('div');
+      div.style.marginBottom = '6px';
+      div.style.padding      = '4px 6px';
+      div.style.background   = '#ffffff';
+      div.style.borderRadius = '6px';
+      div.textContent = `${nombre}: ${data.tickets} tickets / S/ ${data.monto}`;
+      panel.appendChild(div);
+    });
+  } catch (err) {
+    console.error('Error cargando resumen global', err);
+    renderPanelAgentes();
+  }
+}
+
+// Botón Limpiar resumen (sigue usando el localStorage)
 const btnClearResumen = document.getElementById('btnClearResumen');
 if (btnClearResumen) {
   if (!esCEO()) {
-    // Ocultar botón para agentes y supervisores
     btnClearResumen.style.display = 'none';
   } else {
     btnClearResumen.addEventListener('click', () => {
@@ -495,10 +531,15 @@ if (btnClearResumen) {
   }
 }
 
+// === EVENTO BOTÓN "Resumen por agente" ===
+if (btnResumenAgentes && sidePanel && esCEO()) {
+  btnResumenAgentes.addEventListener('click', () => {
+    sidePanel.classList.toggle('collapsed');
+    cargarResumenGlobal();
+  });
+}
 
-
-
-
+// Alta de equipos
 if (btnAddEquipo && inputEquipo && listaEquipos) {
   btnAddEquipo.addEventListener('click', () => {
     const nombre = inputEquipo.value.trim();
@@ -524,10 +565,10 @@ function renderEquipos() {
 
   // actualizar círculo
   const totalTicketsCircle = document.getElementById('totalTicketsCircle');
-  const totalMontoCircle = document.getElementById('totalMontoCircle');
+  const totalMontoCircle   = document.getElementById('totalMontoCircle');
   if (totalTicketsCircle && totalMontoCircle) {
     totalTicketsCircle.textContent = total;
-    totalMontoCircle.textContent = total * 3; // precio por ticket
+    totalMontoCircle.textContent   = total * 3; // precio por ticket
   }
 
   // limpiar contenedor
@@ -554,7 +595,7 @@ function renderEquipos() {
 
     // calculamos monto de este equipo (tickets * 3)
     let ticketsEquipo = equipos[nombre];
-    let montoEquipo = ticketsEquipo * 3;
+    let montoEquipo   = ticketsEquipo * 3;
 
     // guardamos en data- atributos para usar en "equipo top"
     setDatosEquipo(card, ticketsEquipo, montoEquipo);
@@ -562,28 +603,27 @@ function renderEquipos() {
     // +
     const btnMas = document.createElement('button');
     btnMas.textContent = '+';
-    btnMas.className = 'btn btn-green';
+    btnMas.className   = 'btn btn-green';
     btnMas.addEventListener('click', () => {
       equipos[nombre] += 1;
       ultimoEquipoSeleccionado = nombre;
 
       // registrar en ventasPorAgente
       if (!ventasPorAgente[nombreAgente]) {
-  ventasPorAgente[nombreAgente] = {
-    tickets: 0,
-    monto: 0,
-    topEquipo: '—',
-    equipos: {},
-    fecha: new Date().toLocaleString('es-PE')
-  };
-}
-
+        ventasPorAgente[nombreAgente] = {
+          tickets: 0,
+          monto: 0,
+          topEquipo: '—',
+          equipos: {},
+          fecha: new Date().toLocaleString('es-PE')
+        };
+      }
 
       const dataAgente = ventasPorAgente[nombreAgente];
 
       // totales generales del agente
       dataAgente.tickets += 1;
-      dataAgente.monto += 3; // precio por ticket
+      dataAgente.monto   += 3;
 
       // detalle por equipo para ese agente
       if (!dataAgente.equipos[nombre]) {
@@ -593,17 +633,16 @@ function renderEquipos() {
 
       // recalcular equipo TOP del agente
       let mejorEquipo = '—';
-      let maxTickets = -1;
+      let maxTickets  = -1;
       Object.keys(dataAgente.equipos).forEach(eq => {
         const t = dataAgente.equipos[eq];
         if (t > maxTickets) {
-          maxTickets = t;
+          maxTickets  = t;
           mejorEquipo = eq;
         }
       });
       dataAgente.topEquipo = mejorEquipo;
 
-      // guardar y refrescar todo
       guardarVentasAgente();
       guardarEquipos();
       renderEquipos();
@@ -612,59 +651,53 @@ function renderEquipos() {
     body.appendChild(btnMas);
 
     // -
-const btnMenos = document.createElement('button');
-btnMenos.textContent = '-';
-btnMenos.className = 'btn btn-yellow';
+    const btnMenos = document.createElement('button');
+    btnMenos.textContent = '-';
+    btnMenos.className   = 'btn btn-yellow';
 
-btnMenos.addEventListener('click', () => {
-  if (equipos[nombre] > 0) {
-    equipos[nombre] -= 1;
-    ultimoEquipoSeleccionado = nombre;
+    btnMenos.addEventListener('click', () => {
+      if (equipos[nombre] > 0) {
+        equipos[nombre] -= 1;
+        ultimoEquipoSeleccionado = nombre;
 
-    // Restar también al agente actual
-    const dataAgente = ventasPorAgente[nombreAgente];
-    if (dataAgente) {
-      if (dataAgente.tickets > 0) dataAgente.tickets -= 1;
-      if (dataAgente.monto > 0) dataAgente.monto -= 3;
+        const dataAgente = ventasPorAgente[nombreAgente];
+        if (dataAgente) {
+          if (dataAgente.tickets > 0) dataAgente.tickets -= 1;
+          if (dataAgente.monto   > 0) dataAgente.monto   -= 3;
 
-      if (dataAgente.equipos && dataAgente.equipos[nombre]) {
-        dataAgente.equipos[nombre] -= 1;
-        if (dataAgente.equipos[nombre] <= 0) {
-          delete dataAgente.equipos[nombre];
+          if (dataAgente.equipos && dataAgente.equipos[nombre]) {
+            dataAgente.equipos[nombre] -= 1;
+            if (dataAgente.equipos[nombre] <= 0) {
+              delete dataAgente.equipos[nombre];
+            }
+
+            let mejorEquipo = '—';
+            let maxTickets  = -1;
+            Object.keys(dataAgente.equipos).forEach(eq => {
+              const t = dataAgente.equipos[eq];
+              if (t > maxTickets) {
+                maxTickets  = t;
+                mejorEquipo = eq;
+              }
+            });
+            dataAgente.topEquipo = mejorEquipo;
+          }
         }
 
-        // recalcular equipo TOP del agente
-        let mejorEquipo = '—';
-        let maxTickets = -1;
-        Object.keys(dataAgente.equipos).forEach(eq => {
-          const t = dataAgente.equipos[eq];
-          if (t > maxTickets) {
-            maxTickets = t;
-            mejorEquipo = eq;
-          }
-        });
-        dataAgente.topEquipo = mejorEquipo;
+        guardarVentasAgente();
+        guardarEquipos();
+        renderEquipos();
+        renderPanelAgentes();
       }
-    }
-
-    guardarVentasAgente();
-    guardarEquipos();
-    renderEquipos();
-    renderPanelAgentes();
-  }
-});
-
-body.appendChild(btnMenos);
-
+    });
+    body.appendChild(btnMenos);
 
     // EDITAR
     const btnEdit = document.createElement('button');
     btnEdit.className = 'btn btn-edit';
     btnEdit.textContent = '✏ Editar';
     btnEdit.addEventListener('click', () => {
-      // Si ya es CEO o Supervisor, edita directo
       if (!esCEO() && !esSupervisor()) {
-        // Agente: debe pedir permiso
         const rolPermiso = prompt(
           '🔐 Permiso requerido para EDITAR.\n' +
           'Escribe "S" para Supervisor o "C" para CEO:'
@@ -679,9 +712,8 @@ body.appendChild(btnMenos);
         );
         if (!pass) return;
 
-        // Cambia estos valores para que coincidan con login.js
         const PASS_SUPERVISOR = 'SupPucala2025';
-        const PASS_CEO = 'HALCO2025MARCOS';
+        const PASS_CEO        = 'HALCO2025MARCOS';
 
         const ok =
           (tipo === 'S' && pass === PASS_SUPERVISOR) ||
@@ -691,7 +723,6 @@ body.appendChild(btnMenos);
           alert('Contraseña incorrecta. No se puede editar el equipo.');
           return;
         }
-        // Si pasó la verificación, continúa y deja editar
       }
 
       const nuevoNombre = prompt('Nuevo nombre del equipo:', nombre);
@@ -707,28 +738,24 @@ body.appendChild(btnMenos);
     });
     body.appendChild(btnEdit);
 
-   // ELIMINAR (solo CEO ve el botón)
-if (esCEO()) {
-  const btnDelete = document.createElement('button');
-  btnDelete.className = 'btn btn-red';
-  btnDelete.textContent = '✖';
-  btnDelete.addEventListener('click', () => {
-    const PASS_CEO = 'HALCO2025MARCOS'; // misma que login.js
-    if (!confirm(`¿Eliminar el equipo "${nombre}"?`)) return;
+    // ELIMINAR (solo CEO)
+    if (esCEO()) {
+      const btnDelete = document.createElement('button');
+      btnDelete.className = 'btn btn-red';
+      btnDelete.textContent = '✖';
+      btnDelete.addEventListener('click', () => {
+        if (!confirm(`¿Eliminar el equipo "${nombre}"?`)) return;
+        delete equipos[nombre];
+        guardarEquipos();
+        renderEquipos();
+      });
+      body.appendChild(btnDelete);
+    }
 
-    delete equipos[nombre];
-    guardarEquipos();
-    renderEquipos();
-  });
-  body.appendChild(btnDelete);
-}  // <- aquí cierra SOLO el if (esCEO())
-
-// Estas dos SIEMPRE van afuera del if
-card.appendChild(body);
-listaEquipos.appendChild(card);
+    card.appendChild(body);
+    listaEquipos.appendChild(card);
   });
 
-  // actualizar equipo top global
   actualizarTopEquipo();
 }
 
@@ -737,9 +764,9 @@ renderEquipos();
 renderPanelAgentes();
 
 // ================== REGISTRO MANUAL DE CÓDIGO ==================
-const inputCodigoManual   = document.getElementById('codigoManual');
-const btnRegistrarPublico = document.getElementById('btnRegistrarPublico');
-const btnRegistrarJugador = document.getElementById('btnRegistrarJugador');
+const inputCodigoManual    = document.getElementById('codigoManual');
+const btnRegistrarPublico  = document.getElementById('btnRegistrarPublico');
+const btnRegistrarJugador  = document.getElementById('btnRegistrarJugador');
 const btnRegistrarDirectiva = document.getElementById('btnRegistrarDirectiva');
 
 function validarBaseManual() {
@@ -755,7 +782,7 @@ function validarBaseManual() {
   return codigo;
 }
 
-// Público (como antes)
+// Público
 if (btnRegistrarPublico && inputCodigoManual) {
   btnRegistrarPublico.addEventListener('click', () => {
     const codigo = validarBaseManual();
@@ -800,7 +827,6 @@ if (btnRegistrarDirectiva && inputCodigoManual) {
 // ================== EVENTOS GENERALES ==================
 btnStart.addEventListener('click', startScan);
 btnStop.addEventListener('click', stopScan);
-
 btnCopyCode.addEventListener('click', copyCode);
 
 btnSendForm.addEventListener('click', () => {
@@ -834,19 +860,17 @@ btnDownloadJpg.addEventListener('click', () => {
 
 // === ABRIR FORM DE GOOGLE CON DATOS DEL USUARIO ===
 function abrirFormEscaneo() {
-  const codigo = sessionStorage.getItem('codigo');   // AGE-01 / SUP-01 / CEO-01
-  const rango  = sessionStorage.getItem('usuario');  // Agente / Supervisor / CEO
+  const codigo = sessionStorage.getItem('codigo'); // AGE-01 / SUP-01 / CEO-01
+  const rango  = sessionStorage.getItem('usuario'); // Agente / Supervisor / CEO
 
   if (!codigo || !rango) {
     alert('Debes iniciar sesión para registrar en el formulario.');
     return;
   }
 
-  // URL base de tu formulario (sin parámetros)
   const baseUrl = 'https://docs.google.com/forms/d/e/1FAIpQLSe_0E3-hsF4nbq0nArjQvuVe2ckG2xfz3pvU-v5z9edLAVbtA/viewform?usp=pp_url';
 
-  // entry.1375230144 -> USUARIO   |  entry.2139797690 -> RANGO_ENTRANTE
   const url = `${baseUrl}&entry.1375230144=${encodeURIComponent(codigo)}&entry.2139797690=${encodeURIComponent(rango)}`;
 
-  window.open(url, '_blank');   // abre el Form en nueva pestaña
+  window.open(url, '_blank');
 }
