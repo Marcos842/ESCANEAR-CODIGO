@@ -664,3 +664,15 @@ body.dark-mode .side-panel {
 body.dark-mode #panelAgentes > div {
   border-color: #333;
 }
+.side-panel {
+  max-height: 80vh;      /* alto máximo relativo a la pantalla */
+  overflow-y: auto;      /* scroll dentro del panel si hay muchos agentes */
+}
+
+@media (max-width: 600px) {
+  .side-panel {
+    position: static;    /* que no flote a la derecha en móviles */
+    margin: 15px auto;
+    width: 95%;
+  }
+}
