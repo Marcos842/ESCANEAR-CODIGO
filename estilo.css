@@ -664,15 +664,54 @@ body.dark-mode .side-panel {
 body.dark-mode #panelAgentes > div {
   border-color: #333;
 }
+
+
+
 .side-panel {
-  max-height: 80vh;      /* alto máximo relativo a la pantalla */
-  overflow-y: auto;      /* scroll dentro del panel si hay muchos agentes */
+  position: fixed;
+  right: 10px;
+  top: 90px;
+  width: 260px;
+  transition: transform 0.2s ease, opacity 0.2s ease;
 }
 
+/* Botón flecha lateral */
+.side-panel-toggle {
+  position: absolute;
+  left: -40px;          /* sobresale un poco del panel */
+  top: 50%;             /* centro vertical */
+  transform: translateY(-50%);
+  width: 26px;
+  height: 40px;
+  border-radius: 20px 0 0 20px;  /* medio óvalo pegado al panel */
+  border: none;
+  background: #424242;
+  color: #ffffff;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+}
+
+/* Panel colapsado: se desplaza a la derecha casi todo su ancho */
+.side-panel.collapsed {
+  transform: translateX(230px);
+  opacity: 0.4;
+}
+
+/* En colapsado la flecha queda pegada al borde de la pantalla */
+.side-panel.collapsed .side-panel-toggle {
+  left: -26px;
+}
+
+/* Ajuste en móviles: mismo diseño, solo posiciones */
 @media (max-width: 600px) {
   .side-panel {
-    position: static;    /* que no flote a la derecha en móviles */
-    margin: 15px auto;
-    width: 95%;
+    right: 0;
+    width: 260px;
   }
 }
+
+
