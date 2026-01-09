@@ -40,7 +40,6 @@ body.dark-mode .btn-theme-toggle {
   background-color: var(--card-bg);
 }
 
-
 /* ================== ESTILOS GENERALES ESCÁNER ================== */
 h1 {
   text-align: center;
@@ -70,7 +69,6 @@ body:not(.login-body) .resumen-circle {
 .center {
   text-align: center;
 }
-
 
 /* ===== BOTONES GENERALES ===== */
 button {
@@ -142,7 +140,6 @@ button {
   color: #fff;
 }
 
-
 /* ===== INPUTS Y LECTOR ===== */
 input[type="text"] {
   width: 80%;
@@ -191,7 +188,6 @@ input[type="text"] {
   min-width: auto;
 }
 
-
 /* ================== RESUMEN CIRCULAR (TICKETS / MONTO) ================== */
 .resumen-circular {
   text-align: center;
@@ -218,7 +214,6 @@ input[type="text"] {
   margin: 2px 0;
 }
 
-
 /* ================== RESPONSIVE GENERAL (MÓVIL) ================== */
 @media (max-width: 600px) {
   .container {
@@ -242,7 +237,6 @@ input[type="text"] {
     font-size: 12px;
   }
 }
-
 
 /* ================== TARJETAS DE EQUIPOS ================== */
 /* Contenedor de tarjetas de equipos */
@@ -313,7 +307,6 @@ body.dark-mode .equipo-card {
     grid-column: 1 / 3;
   }
 }
-
 
 /* ================== ESTILOS LOGIN ================== */
 .login-body {
@@ -430,7 +423,6 @@ body.dark-mode .equipo-card {
   padding: 0;
 }
 
-
 /* ================== BARRA SUPERIOR (PÁGINAS INTERNAS) ================== */
 .top-bar {
   position: sticky;
@@ -468,7 +460,6 @@ body.dark-mode .equipo-card {
     gap: 5px;
   }
 }
-
 
 /* ================== SOPORTE ================== */
 .support-box {
@@ -542,7 +533,6 @@ body.dark-mode .equipo-card {
   margin-top: 10px;
 }
 
-
 /* ================== BOTÓN MODO OSCURO ================== */
 .btn-theme-toggle {
   margin-left: 10px;
@@ -596,7 +586,6 @@ body.login-body.dark-mode .login-box {
 body.login-body.dark-mode .login-box h2 {
   color: #90caf9;
 }
-
 
 /* ================== PANEL LATERAL (CEO) ================== */
 /* Caja general del panel lateral */
@@ -654,13 +643,11 @@ body.dark-mode #panelAgentes {
   color: #000000; /* texto negro sobre tarjeta blanca */
 }
 
-
 /* ===== Botón flecha para ocultar/mostrar panel ===== */
 .side-panel-toggle {
-  position: absolute;
-  left: -40px;
-  top: 50%;
-  transform: translateY(-50%);
+  position: fixed;  /* Cambiado de absolute a fixed */
+  right: 270px;     /* 260px del panel + 10px de margen */
+  top: 140px;
   width: 26px;
   height: 40px;
   border-radius: 20px 0 0 20px;
@@ -673,6 +660,7 @@ body.dark-mode #panelAgentes {
   align-items: center;
   justify-content: center;
   box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+  z-index: 1499; /* Uno menos que el panel */
 }
 
 /* Panel colapsado (se mueve hacia la derecha) */
@@ -681,9 +669,9 @@ body.dark-mode #panelAgentes {
   opacity: 0.4;
 }
 
-/* Flecha cuando panel está colapsado */
-.side-panel.collapsed .side-panel-toggle {
-  left: -26px;
+/* Flecha cuando panel está colapsado - Cambiado el selector */
+.side-panel.collapsed ~ .side-panel-toggle {
+  right: 40px; /* Se mueve junto con el panel */
 }
 
 /* Ajuste en móviles SOLO para el panel lateral */
@@ -692,7 +680,16 @@ body.dark-mode #panelAgentes {
     right: 0;
     width: 260px;
   }
+  
+  .side-panel-toggle {
+    right: 260px;
+  }
+  
+  .side-panel.collapsed ~ .side-panel-toggle {
+    right: 30px;
+  }
 }
+
 /* Bloque de input + botones centrado */
 .bloque-guardar {
   display: flex;
@@ -719,3 +716,30 @@ body.dark-mode #panelAgentes {
     max-width: 260px;
   }
 }
+
+/* Botón resetear contador */
+.btn-reset {
+    margin-top: 15px;
+    padding: 10px 20px;
+    background-color: #f44336;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.btn-reset:hover {
+    background-color: #d32f2f;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+
+.btn-reset:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
