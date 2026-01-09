@@ -79,11 +79,13 @@ async function validarYRegistrar() {
     
     // Mostrar resultado válido
     mostrarExito(resultado.datos);
-    actualizarContador(true);
     
     // Registrar en Google Sheets usando JSONP
     registrarEnSheets(qrInput, (data) => {
         if (data.success) {
+            // ✅ SOLO AQUÍ incrementar el contador
+            actualizarContador(true);
+            
             const registroMsg = document.createElement("p");
             registroMsg.innerHTML = "📝 <strong>Registrado en Google Sheets correctamente</strong>";
             registroMsg.style.color = "#2196F3";
@@ -97,7 +99,7 @@ async function validarYRegistrar() {
             detallesDiv.appendChild(errorMsg);
         }
     });
-    
+
     // Limpiar input
     document.getElementById("qrInput").value = "";
 }
@@ -160,6 +162,32 @@ function actualizarContador(esValido) {
     span.textContent = contador;
 }
 
+// ================== RESETEAR CONTADOR (ADMIN) ==================
+function resetearContador() {
+    // Contraseña del CEO
+    const PASSWORD_CEO = "HALCO2025MARCOS";
+    
+    // Solicitar contraseña
+    const password = prompt("🔐 Ingrese la contraseña de administrador:");
+    
+    if (password === null) {
+        // Usuario canceló
+        return;
+    }
+    
+    if (password === PASSWORD_CEO) {
+        // Contraseña correcta
+        if (confirm("¿Está seguro de resetear el contador a 0?")) {
+            localStorage.setItem("ticketsValidados", "0");
+            document.getElementById("ticketsValidados").textContent = "0";
+            alert("✅ Contador reseteado exitosamente");
+        }
+    } else {
+        // Contraseña incorrecta
+        alert("❌ Contraseña incorrecta. Acceso denegado.");
+    }
+}
+
 // ================== INICIALIZACIÓN ==================
 document.addEventListener("DOMContentLoaded", () => {
     // Cargar contador
@@ -175,4 +203,10 @@ document.addEventListener("DOMContentLoaded", () => {
             validarYRegistrar();
         }
     });
+    
+    // Botón resetear contador
+    const btnResetear = document.getElementById("btnResetear");
+    if (btnResetear) {
+        btnResetear.addEventListener("click", resetearContador);
+    }
 });
