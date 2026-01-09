@@ -2,6 +2,11 @@
 const CLAVE_SECRETA = "2026halconesMarcosBarbozaD22";
 const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwcpSwMUvTf3774sok06FfRmxEHW_MtK8ykPGVDFz6B4n-T1GEJuQWX-8FCPBEmffw0/exec";
 
+// ⬇️ 
+if (typeof CryptoJS === 'undefined') {
+    alert("❌ ERROR: CryptoJS no se cargó. Recarga la página.");
+    }
+
 // ================== DESENCRIPTACIÓN LOCAL ==================
 function desencriptarLocal(textoEncriptado) {
     try {
