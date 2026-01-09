@@ -132,7 +132,7 @@ function mostrarExito(datos) {
             <li><strong>Nombre:</strong> ${datos.nombre}</li>
             <li><strong>Evento:</strong> ${datos.evento}</li>
             <li><strong>Asiento:</strong> ${datos.asiento}</li>
-            <li><strong>Precio:</strong> S/ ${datos.precio}</li>
+            <li><strong>Precio:</strong> ${datos.precio}</li>
             <li><strong>Válido hasta:</strong> ${fechaExpira}</li>
         </ul>
         <h3 style="color: #4CAF50; margin-top: 20px;">🎉 ACCESO PERMITIDO</h3>
