@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Validador de Tickets QR</title>
+    <link rel="stylesheet" href="estilo.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
+</head>
+<body>
+    <!-- Barra superior -->
+    <div class="top-bar">
+        <div class="top-left">
+            <span id="topTitulo">🎫 Validador de Tickets QR</span>
+            <span id="lblTiempoAgente"></span>
+        </div>
+        <div class="top-right">
+            <a href="index.html" id="linkInicio">Inicio</a>
+            <a href="soporte.html" id="linkSoporte">Soporte</a>
+            <a href="login.html" id="linkSesion">Iniciar sesión</a>
+            <button class="btn-theme-toggle" id="btnTheme">🌙</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <h1>🎫 Validador de Tickets QR Encriptado</h1>
+        
+        <div class="info-box" style="background: #e3f2fd; padding: 15px; border-radius: 10px; margin: 20px 0; border-left: 4px solid #2196F3;">
+            <p style="color: #0d47a1; font-size: 14px; line-height: 1.5;">
+                📱 Escanea el código QR con tu celular y pega aquí el texto encriptado, o usa un lector de QR para obtener el contenido.
+            </p>
+        </div>
+        
+        <div class="center">
+            <textarea 
+                id="qrInput" 
+                placeholder="Pega aquí el texto del código QR encriptado..."
+                style="width: 90%; max-width: 600px; height: 150px; padding: 15px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 14px; font-family: monospace; resize: vertical;"
+            ></textarea>
+        </div>
+        
+        <div class="center" style="margin-top: 15px;">
+            <button id="btnValidar" class="btn btn-blue" style="width: 90%; max-width: 400px; padding: 18px; font-size: 18px;">
+                🔍 Validar y Registrar Ticket
+            </button>
+        </div>
+        
+        <div id="resultado" style="display: none; margin-top: 25px; padding: 25px; border-radius: 10px;"></div>
+        
+        <!-- Resumen de validaciones -->
+        <div class="resumen-circular">
+            <h3>Resumen de Validaciones</h3>
+            <div class="resumen-circle">
+                <div class="resumen-line">Tickets: <span id="totalTicketsValidados">0</span></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="theme.js"></script>
+    <script src="validador.js"></script>
+</body>
+</html>
