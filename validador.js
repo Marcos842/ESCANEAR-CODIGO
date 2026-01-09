@@ -5,7 +5,7 @@ const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwcpSwMUvTf3774sok0
 // ⬇️ 
 if (typeof CryptoJS === 'undefined') {
     alert("❌ ERROR: CryptoJS no se cargó. Recarga la página.");
-    }
+}
 
 // ================== DESENCRIPTACIÓN LOCAL ==================
 function desencriptarLocal(textoEncriptado) {
@@ -34,6 +34,29 @@ function desencriptarLocal(textoEncriptado) {
     }
 }
 
+// ================== REGISTRAR EN SHEETS (JSONP) ==================
+function registrarEnSheets(qrEncriptado, callback) {
+    const callbackName = 'jsonpCallback_' + Date.now();
+    
+    window[callbackName] = function(response) {
+        callback(response);
+        // Limpiar
+        delete window[callbackName];
+        document.body.removeChild(script);
+    };
+    
+    const url = `${WEB_APP_URL}?qr=${encodeURIComponent(qrEncriptado)}&callback=${callbackName}`;
+    const script = document.createElement('script');
+    script.src = url;
+    script.onerror = function() {
+        callback({ success: false, mensaje: "Error de conexión" });
+        delete window[callbackName];
+        document.body.removeChild(script);
+    };
+    
+    document.body.appendChild(script);
+}
+
 // ================== VALIDAR Y REGISTRAR ==================
 async function validarYRegistrar() {
     const qrInput = document.getElementById("qrInput").value.trim();
@@ -58,20 +81,8 @@ async function validarYRegistrar() {
     mostrarExito(resultado.datos);
     actualizarContador(true);
     
-    // Registrar en Google Sheets
-    try {
-        const response = await fetch(WEB_APP_URL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                qrEncriptado: qrInput
-            })
-        });
-        
-        const data = await response.json();
-        
+    // Registrar en Google Sheets usando JSONP
+    registrarEnSheets(qrInput, (data) => {
         if (data.success) {
             const registroMsg = document.createElement("p");
             registroMsg.innerHTML = "📝 <strong>Registrado en Google Sheets correctamente</strong>";
@@ -79,17 +90,13 @@ async function validarYRegistrar() {
             registroMsg.style.marginTop = "10px";
             detallesDiv.appendChild(registroMsg);
         } else {
-            throw new Error(data.mensaje || "Error al registrar");
+            const errorMsg = document.createElement("p");
+            errorMsg.innerHTML = "⚠️ <strong>Ticket válido pero no se pudo registrar en Google Sheets</strong>";
+            errorMsg.style.color = "#FF9800";
+            errorMsg.style.marginTop = "10px";
+            detallesDiv.appendChild(errorMsg);
         }
-        
-    } catch (error) {
-        console.error("Error al registrar:", error);
-        const errorMsg = document.createElement("p");
-        errorMsg.innerHTML = "⚠️ <strong>Ticket válido pero no se pudo registrar en Google Sheets</strong>";
-        errorMsg.style.color = "#FF9800";
-        errorMsg.style.marginTop = "10px";
-        detallesDiv.appendChild(errorMsg);
-    }
+    });
     
     // Limpiar input
     document.getElementById("qrInput").value = "";
