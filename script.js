@@ -618,12 +618,21 @@ async function cargarResumenGlobal() {
     const resp      = await fetch(API_RESUMEN_GLOBAL);
     const registros = await resp.json(); // [{usuario,tickets,monto,topEquipo,fecha}, ...]
 
+    // ✅ DEBUG: Ver qué datos está devolviendo la API
+    console.log('📊 Datos recibidos de la API:', registros);
+    console.log('📊 Cantidad de registros:', registros.length);
+    
+    if (registros.length > 0) {
+      console.log('📊 Primer registro:', registros[0]);
+    }
+
     renderPanelAgentes(registros);
   } catch (err) {
-    console.error('Error cargando resumen global', err);
+    console.error('❌ Error cargando resumen global', err);
     renderPanelAgentes([]);
   }
 }
+
 
 // Botón Limpiar resumen
 if (btnClearResumen) {
