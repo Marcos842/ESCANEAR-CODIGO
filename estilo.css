@@ -743,3 +743,12 @@ body.dark-mode #panelAgentes {
     box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
+/* ===== Ocultar panel lateral SOLO para agentes ===== */
+body.role-agente .side-panel-toggle {
+    display: none !important;
+}
+
+body.role-agente .side-panel {
+    display: none !important;
+}
+
