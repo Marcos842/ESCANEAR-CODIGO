@@ -488,7 +488,8 @@ function actualizarTopEquipo() {
   }
 }
 
-// panel lateral: resumen por agente (SOLO DATOS GLOBALES)
+
+// panel lateral: resumen por agente (SOLO DATOS DE HOY - AGRUPADOS)
 function renderPanelAgentes(datosDesdeApi = null) {
   const panel = document.getElementById('panelAgentes');
   if (!panel) return;
@@ -506,23 +507,105 @@ function renderPanelAgentes(datosDesdeApi = null) {
     return;
   }
 
-  datosDesdeApi.forEach(r => {
+  // ✅ OBTENER FECHA DE HOY (solo año-mes-día)
+  const hoy = new Date();
+  const añoHoy = hoy.getFullYear();
+  const mesHoy = hoy.getMonth(); // 0-11
+  const diaHoy = hoy.getDate();
+
+  // ✅ FILTRAR SOLO REGISTROS DE HOY
+  const registrosDeHoy = datosDesdeApi.filter(r => {
+    if (!r.fecha) return false;
+
+    // Parsear fecha del registro (formato ISO o similar)
+    const fechaRegistro = new Date(r.fecha);
+    
+    // Comparar año, mes y día
+    return (
+      fechaRegistro.getFullYear() === añoHoy &&
+      fechaRegistro.getMonth() === mesHoy &&
+      fechaRegistro.getDate() === diaHoy
+    );
+  });
+
+  // Si no hay registros de hoy
+  if (registrosDeHoy.length === 0) {
     const div = document.createElement('div');
     div.style.marginBottom = '6px';
-    div.style.padding      = '4px 6px';
-    div.style.background   = '#ffffff';
+    div.style.padding      = '8px';
+    div.style.background   = '#fff3cd';
     div.style.borderRadius = '6px';
+    div.style.color        = '#856404';
+    div.style.fontSize     = '13px';
+    div.textContent = '📅 No hay registros de hoy todavía.';
+    panel.appendChild(div);
+    return;
+  }
 
-    const usuario   = r.usuario   || 'SIN_USUARIO';
-    const tickets   = r.tickets   || 0;
-    const monto     = r.monto     || 0;
-    const topEquipo = r.topEquipo || '—';
-    const fecha     = r.fecha     || '';
+  // ✅ AGRUPAR DATOS POR USUARIO (solo de hoy)
+  const resumenPorUsuario = {};
 
-    div.textContent = `${usuario}: ${tickets} tickets / S/ ${monto} / Top: ${topEquipo} / ${fecha}`;
+  registrosDeHoy.forEach(r => {
+    const usuario = r.usuario || 'SIN_USUARIO';
+    
+    if (!resumenPorUsuario[usuario]) {
+      resumenPorUsuario[usuario] = {
+        tickets: 0,
+        monto: 0,
+        topEquipo: '—',
+        ultimaFecha: ''
+      };
+    }
+
+    // Acumular tickets y monto
+    resumenPorUsuario[usuario].tickets += (r.tickets || 0);
+    resumenPorUsuario[usuario].monto   += (r.monto || 0);
+
+    // Actualizar top equipo
+    if (r.topEquipo && r.topEquipo !== '—') {
+      resumenPorUsuario[usuario].topEquipo = r.topEquipo;
+    }
+
+    // Guardar la última fecha
+    if (r.fecha) {
+      resumenPorUsuario[usuario].ultimaFecha = r.fecha;
+    }
+  });
+
+  // ✅ RENDERIZAR UNA LÍNEA POR USUARIO (solo los de hoy)
+  Object.keys(resumenPorUsuario).forEach(usuario => {
+    const datos = resumenPorUsuario[usuario];
+    
+    const div = document.createElement('div');
+    div.style.marginBottom = '8px';
+    div.style.padding      = '8px';
+    div.style.background   = '#ffffff';
+    div.style.borderRadius = '8px';
+    div.style.fontSize     = '13px';
+    div.style.borderLeft   = '4px solid #1976d2';
+
+    // Formato hora sin milisegundos
+    let horaFormateada = '—';
+    if (datos.ultimaFecha) {
+      const fecha = new Date(datos.ultimaFecha);
+      const horas = String(fecha.getHours()).padStart(2, '0');
+      const mins  = String(fecha.getMinutes()).padStart(2, '0');
+      const segs  = String(fecha.getSeconds()).padStart(2, '0');
+      horaFormateada = `${horas}:${mins}:${segs}`;
+    }
+
+    div.innerHTML = `
+      <strong>${usuario}</strong><br>
+      📊 Tickets: <strong>${datos.tickets}</strong> | 
+      💰 Monto: <strong>S/ ${datos.monto}</strong><br>
+      🏆 Top: ${datos.topEquipo} | 
+      🕒 ${horaFormateada}
+    `;
+    
     panel.appendChild(div);
   });
 }
+
 
 // === URL de la API global (CEO ve todo)
 const API_RESUMEN_GLOBAL = 'https://script.google.com/macros/s/AKfycby5oD-aB0J7e--ql1EwmdOLYUhHdUBlOGY71TuQbB5pHpqjAvSCIp4WSsLqKnawWVuM/exec';
