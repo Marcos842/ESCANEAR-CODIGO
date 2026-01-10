@@ -770,43 +770,32 @@ function renderEquipos() {
     });
     body.appendChild(btnEdit);
 
-    // ✅ NUEVO: BOTÓN ELIMINAR CON AUTORIZACIÓN CEO
+    // ✅ BOTÓN ELIMINAR CON AUTORIZACIÓN CEO
     const btnEliminar = document.createElement('button');
     btnEliminar.className = 'btn btn-eliminar';
     btnEliminar.textContent = '🗑️';
     btnEliminar.addEventListener('click', () => {
-      // Solicitar contraseña de CEO
       const PASSWORD_CEO = 'HALCO2025MARCOS';
       
       const password = prompt('🔐 Ingresa la contraseña de CEO para eliminar este equipo:');
       
-      if (password === null) {
-        return; // Usuario canceló
-      }
+      if (password === null) return;
       
       if (password !== PASSWORD_CEO) {
         alert('❌ Contraseña incorrecta. No tienes autorización para eliminar equipos.');
         return;
       }
       
-      // Confirmar eliminación
       const confirmacion = confirm(
         `⚠️ ¿Estás seguro de eliminar el equipo "${nombre}"?\n\n` +
         `Tickets actuales: ${equipos[nombre]}\n` +
         `Esta acción NO se puede deshacer.`
       );
       
-      if (!confirmacion) {
-        return;
-      }
+      if (!confirmacion) return;
       
-      // Eliminar del objeto equipos
       delete equipos[nombre];
-      
-      // Guardar cambios
       guardarEquipos();
-      
-      // Re-renderizar
       renderEquipos();
       
       alert(`✅ Equipo "${nombre}" eliminado correctamente.`);
@@ -819,7 +808,6 @@ function renderEquipos() {
 
   actualizarTopEquipo();
 }
-
 
 // pintar equipos al cargar
 renderEquipos();
@@ -835,27 +823,100 @@ const btnRegistrarPublico    = document.getElementById('btnRegistrarPublico');
 const btnRegistrarJugador    = document.getElementById('btnRegistrarJugador');
 const btnRegistrarDirectiva  = document.getElementById('btnRegistrarDirectiva');
 
-function validarBaseManual() {
-  const codigo = inputCodigoManual.value.trim();
-  if (!codigo) {
-    alert('Escribe o pega el código / nombre primero');
+// ✅ FUNCIÓN MEJORADA: Seleccionar/Cambiar equipo con bucle
+function seleccionarOCambiarEquipo(equipoActual = null) {
+  const equiposDisponibles = Object.keys(equipos);
+  
+  if (equiposDisponibles.length === 0) {
+    alert('❌ No hay equipos disponibles. Primero crea un equipo en "Equipos / Ventas".');
     return null;
   }
-  if (!ultimoEquipoSeleccionado) {
-    alert('Primero selecciona un equipo y suma al menos 1 ticket con el botón +');
-    return null;
+  
+  let mensaje = equipoActual 
+    ? `🔄 Equipo actual: ${equipoActual}\n\n📋 Equipos disponibles:\n\n`
+    : '📋 Selecciona el equipo:\n\n';
+    
+  equiposDisponibles.forEach((eq, index) => {
+    mensaje += `${index + 1}. ${eq}\n`;
+  });
+  mensaje += '\n✍️ Escribe el NÚMERO del equipo:';
+  
+  const seleccion = prompt(mensaje);
+  if (!seleccion) return equipoActual; // Mantiene el actual si cancela
+  
+  const indice = parseInt(seleccion) - 1;
+  
+  if (indice >= 0 && indice < equiposDisponibles.length) {
+    return equiposDisponibles[indice];
+  } else {
+    alert('❌ Número inválido. Intenta de nuevo.');
+    return seleccionarOCambiarEquipo(equipoActual); // Vuelve a preguntar
   }
-  return codigo;
+}
+
+// ✅ FUNCIÓN MEJORADA: Confirmar con opción de cambiar equipo
+function confirmarConOpcionCambio(codigo, equipo, tipo, nombreExtra = '') {
+  while (true) {
+    let mensaje = `✅ Confirmar registro ${tipo.toUpperCase()}:\n\n`;
+    
+    if (nombreExtra) {
+      mensaje += `Nombre: ${nombreExtra}\n`;
+    }
+    mensaje += `Código: ${codigo}\n`;
+    mensaje += `Equipo: ${equipo}\n\n`;
+    mensaje += `Opciones:\n`;
+    mensaje += `1. ✅ GUARDAR (equipo correcto)\n`;
+    mensaje += `2. 🔄 CAMBIAR equipo\n`;
+    mensaje += `3. ❌ CANCELAR\n\n`;
+    mensaje += `Escribe el NÚMERO de tu opción:`;
+    
+    const opcion = prompt(mensaje);
+    
+    if (!opcion || opcion === '3') {
+      return null; // Usuario canceló
+    }
+    
+    if (opcion === '1') {
+      return equipo; // Confirma y guarda
+    }
+    
+    if (opcion === '2') {
+      const nuevoEquipo = seleccionarOCambiarEquipo(equipo);
+      if (nuevoEquipo) {
+        equipo = nuevoEquipo;
+        // Actualizar ultimoEquipoSeleccionado
+        ultimoEquipoSeleccionado = nuevoEquipo;
+      }
+      continue; // Vuelve a mostrar confirmación con nuevo equipo
+    }
+    
+    alert('❌ Opción inválida. Intenta de nuevo.');
+  }
 }
 
 // Público
 if (btnRegistrarPublico && inputCodigoManual) {
   btnRegistrarPublico.addEventListener('click', () => {
-    const codigo = validarBaseManual();
-    if (!codigo) return;
+    const codigo = inputCodigoManual.value.trim();
+    if (!codigo) {
+      alert('❌ Escribe o pega el código / nombre primero');
+      return;
+    }
+    
+    let equipoFinal = ultimoEquipoSeleccionado;
+    
+    // Si no hay equipo, OBLIGAR a seleccionar
+    if (!equipoFinal) {
+      alert('⚠️ DEBES SELECCIONAR UN EQUIPO PRIMERO\n\n1. Ve a "Equipos / Ventas"\n2. Toca el botón + (verde) del equipo correcto\n3. Luego vuelve aquí');
+      return;
+    }
+    
+    // Confirmar con opción de cambiar
+    const equipoConfirmado = confirmarConOpcionCambio(codigo, equipoFinal, 'público');
+    if (!equipoConfirmado) return;
 
-    sendToGoogleForm(codigo, ultimoEquipoSeleccionado, 'publico');
-    alert('Registro de PÚBLICO guardado correctamente.');
+    sendToGoogleForm(codigo, equipoConfirmado, 'publico');
+    alert('✅ Registro de PÚBLICO guardado correctamente.');
     inputCodigoManual.value = '';
   });
 }
@@ -863,14 +924,32 @@ if (btnRegistrarPublico && inputCodigoManual) {
 // Jugador
 if (btnRegistrarJugador && inputCodigoManual) {
   btnRegistrarJugador.addEventListener('click', () => {
-    const codigo = validarBaseManual();
-    if (!codigo) return;
+    const codigo = inputCodigoManual.value.trim();
+    if (!codigo) {
+      alert('❌ Escribe o pega el código / nombre primero');
+      return;
+    }
+    
+    let equipoFinal = ultimoEquipoSeleccionado;
+    
+    // Si no hay equipo, OBLIGAR a seleccionar
+    if (!equipoFinal) {
+      alert('⚠️ DEBES SELECCIONAR UN EQUIPO PRIMERO\n\n1. Ve a "Equipos / Ventas"\n2. Toca el botón + (verde) del equipo correcto\n3. Luego vuelve aquí');
+      return;
+    }
 
-    const nombreJugador = prompt('Nombre del JUGADOR (ej. Juan Pérez):', '');
-    if (!nombreJugador) return;
+    const nombreJugador = prompt('👤 Nombre del JUGADOR (ej. Juan Pérez):', '');
+    if (!nombreJugador || !nombreJugador.trim()) {
+      alert('❌ Debes escribir el nombre del jugador');
+      return;
+    }
+    
+    // Confirmar con opción de cambiar
+    const equipoConfirmado = confirmarConOpcionCambio(codigo, equipoFinal, 'jugador', nombreJugador);
+    if (!equipoConfirmado) return;
 
-    sendToGoogleForm(codigo, ultimoEquipoSeleccionado, 'jugador', nombreJugador);
-    alert('Registro de JUGADOR guardado correctamente.');
+    sendToGoogleForm(codigo, equipoConfirmado, 'jugador', nombreJugador);
+    alert('✅ Registro de JUGADOR guardado correctamente.');
     inputCodigoManual.value = '';
   });
 }
@@ -878,14 +957,32 @@ if (btnRegistrarJugador && inputCodigoManual) {
 // Directiva
 if (btnRegistrarDirectiva && inputCodigoManual) {
   btnRegistrarDirectiva.addEventListener('click', () => {
-    const codigo = validarBaseManual();
-    if (!codigo) return;
+    const codigo = inputCodigoManual.value.trim();
+    if (!codigo) {
+      alert('❌ Escribe o pega el código / nombre primero');
+      return;
+    }
+    
+    let equipoFinal = ultimoEquipoSeleccionado;
+    
+    // Si no hay equipo, OBLIGAR a seleccionar
+    if (!equipoFinal) {
+      alert('⚠️ DEBES SELECCIONAR UN EQUIPO PRIMERO\n\n1. Ve a "Equipos / Ventas"\n2. Toca el botón + (verde) del equipo correcto\n3. Luego vuelve aquí');
+      return;
+    }
 
-    const nombreDirectiva = prompt('Nombre de la DIRECTIVA (ej. Presidente, delegado):', '');
-    if (!nombreDirectiva) return;
+    const nombreDirectiva = prompt('🏆 Nombre de la DIRECTIVA (ej. Presidente, Delegado):', '');
+    if (!nombreDirectiva || !nombreDirectiva.trim()) {
+      alert('❌ Debes escribir el nombre/cargo de la directiva');
+      return;
+    }
+    
+    // Confirmar con opción de cambiar
+    const equipoConfirmado = confirmarConOpcionCambio(codigo, equipoFinal, 'directiva', nombreDirectiva);
+    if (!equipoConfirmado) return;
 
-    sendToGoogleForm(codigo, ultimoEquipoSeleccionado, 'directiva', nombreDirectiva);
-    alert('Registro de DIRECTIVA guardado correctamente.');
+    sendToGoogleForm(codigo, equipoConfirmado, 'directiva', nombreDirectiva);
+    alert('✅ Registro de DIRECTIVA guardado correctamente.');
     inputCodigoManual.value = '';
   });
 }
