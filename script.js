@@ -660,6 +660,17 @@ if (btnResumenAgentes && sidePanel && esCEO()) {
   });
 }
 
+// ✅ AUTO-REFRESH: Actualizar resumen cada 10 segundos (solo CEO)
+if (esCEO()) {
+  setInterval(() => {
+    // Solo actualizar si el panel NO está colapsado y NO fue limpiado
+    if (!resumenLimpiado && sidePanel && !sidePanel.classList.contains('collapsed')) {
+      cargarResumenGlobal();
+    }
+  }, 10000); // 10000 ms = 10 segundos
+}
+
+
 // Alta de equipos
 if (btnAddEquipo && inputEquipo && listaEquipos) {
   btnAddEquipo.addEventListener('click', () => {
