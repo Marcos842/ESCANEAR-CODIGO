@@ -105,11 +105,13 @@ if (lblTiempo && inicioSesion) {
 }
 
 // ================== CONFIG GOOGLE FORM ==================
-const GOOGLE_FORM_ACTION =
-  "https://docs.google.com/forms/d/e/1FAIpQLSe_0E3-hsF4nbq0nArjQvuVe2ckG2xfz3pvU-v5z9edLAVbtA/formResponse";
-
-const GOOGLE_ENTRY_CODE   = "entry.1389898450"; // Código escaneado
-const GOOGLE_ENTRY_EQUIPO = "entry.1581479368"; // Campo EQUIPO
+const GOOGLEFORMACTION      = 'https://docs.google.com/forms/d/e/1FAIpQLSe_0E3-hsF4nbq0nArjQvuVe2ckG2xfz3pvU-v5z9edLAVbtA/formResponse';
+const GOOGLEENTRYCODE       = 'entry.1389898450'; // Código escaneado
+const GOOGLEENTRYEQUIPO     = 'entry.1581479368'; // Equipo
+const GOOGLEENTRYJUGADOR    = 'entry.74934614';   // JUGADOR
+const GOOGLEENTRYDIRECTIVA  = 'entry.822667573';  // DIRECTIVA
+const GOOGLEENTRYUSUARIO    = 'entry.1375230144'; // USUARIO (AGE-01, CEO-01)
+const GOOGLEENTRYRANGO      = 'entry.2139797690'; // RANGO_ENTRANTE (Agente, CEO)
 
 // ================== VARIABLES ==================
 let scanner = null;
@@ -256,14 +258,6 @@ function stopScan() {
 }
 
 // ENVIAR A GOOGLE FORM (público / jugador / directiva)
-const GOOGLEFORMACTION      = 'https://docs.google.com/forms/d/e/1FAIpQLSe_0E3-hsF4nbq0nArjQvuVe2ckG2xfz3pvU-v5z9edLAVbtA/formResponse';
-const GOOGLEENTRYCODE       = 'entry.1389898450'; // Código escaneado
-const GOOGLEENTRYEQUIPO     = 'entry.1581479368'; // Equipo
-const GOOGLEENTRYJUGADOR    = 'entry.74934614';   // JUGADOR
-const GOOGLEENTRYDIRECTIVA  = 'entry.822667573';  // DIRECTIVA
-const GOOGLEENTRYUSUARIO    = 'entry.1375230144'; // USUARIO (AGE-01, CEO-01)
-const GOOGLEENTRYRANGO      = 'entry.2139797690'; // RANGO_ENTRANTE (Agente, CEO)
-
 function sendToGoogleForm(codigo, equipoSeleccionado, tipoRegistro = 'publico', nombrePersona = '') {
   if (!codigo) return;
 
@@ -488,48 +482,17 @@ function actualizarTopEquipo() {
   }
 }
 
-
-// panel lateral: resumen por agente (SOLO DATOS DE HOY - AGRUPADOS)
+// panel lateral: resumen por agente (AGRUPADOS - SIN FILTRO DE FECHA)
 function renderPanelAgentes(datosDesdeApi = null) {
   const panel = document.getElementById('panelAgentes');
   if (!panel) return;
 
   panel.innerHTML = '';
 
+  // ✅ DEBUG: Ver cuántos datos recibimos
+  console.log('📊 renderPanelAgentes - Datos recibidos:', datosDesdeApi);
+
   if (!datosDesdeApi || !Array.isArray(datosDesdeApi) || datosDesdeApi.length === 0) {
-    const div = document.createElement('div');
-    div.style.marginBottom = '6px';
-    div.style.padding      = '4px 6px';
-    div.style.background   = '#ffffff';
-    div.style.borderRadius = '6px';
-    div.textContent = 'Sin datos globales todavía.';
-    panel.appendChild(div);
-    return;
-  }
-
-  // ✅ OBTENER FECHA DE HOY (solo año-mes-día)
-  const hoy = new Date();
-  const añoHoy = hoy.getFullYear();
-  const mesHoy = hoy.getMonth(); // 0-11
-  const diaHoy = hoy.getDate();
-
-  // ✅ FILTRAR SOLO REGISTROS DE HOY
-  const registrosDeHoy = datosDesdeApi.filter(r => {
-    if (!r.fecha) return false;
-
-    // Parsear fecha del registro (formato ISO o similar)
-    const fechaRegistro = new Date(r.fecha);
-    
-    // Comparar año, mes y día
-    return (
-      fechaRegistro.getFullYear() === añoHoy &&
-      fechaRegistro.getMonth() === mesHoy &&
-      fechaRegistro.getDate() === diaHoy
-    );
-  });
-
-  // Si no hay registros de hoy
-  if (registrosDeHoy.length === 0) {
     const div = document.createElement('div');
     div.style.marginBottom = '6px';
     div.style.padding      = '8px';
@@ -537,12 +500,17 @@ function renderPanelAgentes(datosDesdeApi = null) {
     div.style.borderRadius = '6px';
     div.style.color        = '#856404';
     div.style.fontSize     = '13px';
-    div.textContent = '📅 No hay registros de hoy todavía.';
+    div.textContent = '📅 No hay registros disponibles.';
     panel.appendChild(div);
     return;
   }
 
-  // ✅ AGRUPAR DATOS POR USUARIO (solo de hoy)
+  // ✅ USAR TODOS LOS DATOS (sin filtro de fecha por ahora)
+  const registrosDeHoy = datosDesdeApi;
+
+  console.log('📊 Registros a mostrar:', registrosDeHoy.length);
+
+  // ✅ AGRUPAR DATOS POR USUARIO
   const resumenPorUsuario = {};
 
   registrosDeHoy.forEach(r => {
@@ -572,7 +540,9 @@ function renderPanelAgentes(datosDesdeApi = null) {
     }
   });
 
-  // ✅ RENDERIZAR UNA LÍNEA POR USUARIO (solo los de hoy)
+  console.log('📊 Usuarios agrupados:', Object.keys(resumenPorUsuario));
+
+  // ✅ RENDERIZAR UNA LÍNEA POR USUARIO
   Object.keys(resumenPorUsuario).forEach(usuario => {
     const datos = resumenPorUsuario[usuario];
     
@@ -587,11 +557,18 @@ function renderPanelAgentes(datosDesdeApi = null) {
     // Formato hora sin milisegundos
     let horaFormateada = '—';
     if (datos.ultimaFecha) {
-      const fecha = new Date(datos.ultimaFecha);
-      const horas = String(fecha.getHours()).padStart(2, '0');
-      const mins  = String(fecha.getMinutes()).padStart(2, '0');
-      const segs  = String(fecha.getSeconds()).padStart(2, '0');
-      horaFormateada = `${horas}:${mins}:${segs}`;
+      // Si ya viene en formato "09/01/2026 23:31:22", usar directamente
+      const partes = datos.ultimaFecha.split(' ');
+      if (partes.length > 1) {
+        horaFormateada = partes[1]; // "23:31:22"
+      } else {
+        // Si viene en formato ISO, parsear
+        const fecha = new Date(datos.ultimaFecha);
+        const horas = String(fecha.getHours()).padStart(2, '0');
+        const mins  = String(fecha.getMinutes()).padStart(2, '0');
+        const segs  = String(fecha.getSeconds()).padStart(2, '0');
+        horaFormateada = `${horas}:${mins}:${segs}`;
+      }
     }
 
     div.innerHTML = `
@@ -604,8 +581,9 @@ function renderPanelAgentes(datosDesdeApi = null) {
     
     panel.appendChild(div);
   });
-}
 
+  console.log('✅ Panel renderizado correctamente');
+}
 
 // === URL de la API global (CEO ve todo)
 const API_RESUMEN_GLOBAL = 'https://script.google.com/macros/s/AKfycby5oD-aB0J7e--ql1EwmdOLYUhHdUBlOGY71TuQbB5pHpqjAvSCIp4WSsLqKnawWVuM/exec';
@@ -632,7 +610,6 @@ async function cargarResumenGlobal() {
     renderPanelAgentes([]);
   }
 }
-
 
 // Botón Limpiar resumen
 if (btnClearResumen) {
@@ -678,8 +655,6 @@ if (esCEO()) {
     }
   }, 15000); // 15 segundos
 }
-
-
 
 // Alta de equipos
 if (btnAddEquipo && inputEquipo && listaEquipos) {
