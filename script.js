@@ -8,6 +8,22 @@ function getRolActual() {
 function esCEO()        { return getRolActual() === 'ceo'; }
 function esSupervisor() { return getRolActual() === 'supervisor'; }
 
+// ✅ AGREGAR CLASE AL BODY SEGÚN ROL (para CSS)
+function aplicarClaseRol() {
+  const rol = getRolActual();
+  
+  if (rol === 'agente1' || rol === 'agente2' || rol === 'agente3') {
+    document.body.classList.add('role-agente');
+  } else if (rol === 'ceo') {
+    document.body.classList.add('role-ceo');
+  } else if (rol === 'supervisor') {
+    document.body.classList.add('role-supervisor');
+  }
+}
+
+// Ejecutar al cargar
+aplicarClaseRol();
+
 // Mostrar barra de rol (debajo del h1 en HTML)
 function mostrarRolActual(rol) {
   const barra = document.createElement('div');
@@ -116,10 +132,14 @@ const btnDownloadJpg = document.getElementById('btnDownloadJpg');
 // === BOTONES PANEL LATERAL Y RESUMEN (SOLO CEO) ===
 const btnJugadores      = document.getElementById('btnJugadores');
 const btnDirectiva      = document.getElementById('btnDirectiva');
+const btnClearResumen   = document.getElementById('btnClearResumen');
 const tituloResumen     = document.querySelector('.side-panel h4');
 const panelAgentes      = document.getElementById('panelAgentes');
 const btnResumenAgentes = document.getElementById('btnResumenAgentes');
 const sidePanel         = document.querySelector('.side-panel');
+
+// Variable para controlar si el resumen fue limpiado manualmente
+let resumenLimpiado = false;
 
 // Ocultar panel completo si NO es CEO
 if (!esCEO()) {
@@ -159,9 +179,18 @@ if (toggleSidePanelBtn && sidePanel && esCEO()) {
   toggleSidePanelBtn.addEventListener('click', () => {
     const colapsado = sidePanel.classList.toggle('collapsed');
     toggleSidePanelBtn.textContent = colapsado ? '›' : '‹';
+    
+    // Mover el botón junto con el panel
+    if (colapsado) {
+      toggleSidePanelBtn.style.right = '40px';
+    } else {
+      toggleSidePanelBtn.style.right = '270px';
+    }
   });
-} else if (sidePanel && !esCEO()) {
-  sidePanel.style.display = 'none';
+} else {
+  // Si NO es CEO, ocultar todo
+  if (sidePanel) sidePanel.style.display = 'none';
+  if (toggleSidePanelBtn) toggleSidePanelBtn.style.display = 'none';
 }
 
 // ================== SONIDO ==================
@@ -513,16 +542,25 @@ async function cargarResumenGlobal() {
   }
 }
 
-// Botón Limpiar resumen (solo borra localStorage del dispositivo, por si lo sigues usando)
-const btnClearResumen = document.getElementById('btnClearResumen');
+// Botón Limpiar resumen
 if (btnClearResumen) {
   if (!esCEO()) {
     btnClearResumen.style.display = 'none';
   } else {
     btnClearResumen.addEventListener('click', () => {
-      if (!confirm('¿Borrar el resumen local del dispositivo? Esto NO borra Google Sheet.')) return;
+      if (!confirm('¿Borrar SOLO la vista del resumen? Esto NO borra los datos de Google Sheet.')) return;
+      
+      // Limpiar localStorage local
       Object.keys(ventasPorAgente).forEach(k => delete ventasPorAgente[k]);
       guardarVentasAgente();
+      
+      // Limpiar panel visual
+      renderPanelAgentes([]);
+      
+      // Marcar que fue limpiado manualmente
+      resumenLimpiado = true;
+      
+      alert('Vista del resumen limpiada correctamente.');
     });
   }
 }
@@ -531,7 +569,11 @@ if (btnClearResumen) {
 if (btnResumenAgentes && sidePanel && esCEO()) {
   btnResumenAgentes.addEventListener('click', () => {
     sidePanel.classList.toggle('collapsed');
-    cargarResumenGlobal();
+    
+    // Solo cargar datos si NO fue limpiado manualmente
+    if (!resumenLimpiado) {
+      cargarResumenGlobal();
+    }
   });
 }
 
