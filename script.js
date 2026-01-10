@@ -770,19 +770,48 @@ function renderEquipos() {
     });
     body.appendChild(btnEdit);
 
-    // ELIMINAR (solo CEO)
-    if (esCEO()) {
-      const btnDelete = document.createElement('button');
-      btnDelete.className = 'btn btn-red';
-      btnDelete.textContent = '✖';
-      btnDelete.addEventListener('click', () => {
-        if (!confirm(`¿Eliminar el equipo "${nombre}"?`)) return;
-        delete equipos[nombre];
-        guardarEquipos();
-        renderEquipos();
-      });
-      body.appendChild(btnDelete);
-    }
+    // ✅ NUEVO: BOTÓN ELIMINAR CON AUTORIZACIÓN CEO
+    const btnEliminar = document.createElement('button');
+    btnEliminar.className = 'btn btn-eliminar';
+    btnEliminar.textContent = '🗑️';
+    btnEliminar.addEventListener('click', () => {
+      // Solicitar contraseña de CEO
+      const PASSWORD_CEO = 'HALCO2025MARCOS';
+      
+      const password = prompt('🔐 Ingresa la contraseña de CEO para eliminar este equipo:');
+      
+      if (password === null) {
+        return; // Usuario canceló
+      }
+      
+      if (password !== PASSWORD_CEO) {
+        alert('❌ Contraseña incorrecta. No tienes autorización para eliminar equipos.');
+        return;
+      }
+      
+      // Confirmar eliminación
+      const confirmacion = confirm(
+        `⚠️ ¿Estás seguro de eliminar el equipo "${nombre}"?\n\n` +
+        `Tickets actuales: ${equipos[nombre]}\n` +
+        `Esta acción NO se puede deshacer.`
+      );
+      
+      if (!confirmacion) {
+        return;
+      }
+      
+      // Eliminar del objeto equipos
+      delete equipos[nombre];
+      
+      // Guardar cambios
+      guardarEquipos();
+      
+      // Re-renderizar
+      renderEquipos();
+      
+      alert(`✅ Equipo "${nombre}" eliminado correctamente.`);
+    });
+    body.appendChild(btnEliminar);
 
     card.appendChild(body);
     listaEquipos.appendChild(card);
@@ -790,6 +819,7 @@ function renderEquipos() {
 
   actualizarTopEquipo();
 }
+
 
 // pintar equipos al cargar
 renderEquipos();
